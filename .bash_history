@@ -316,3 +316,128 @@ cd root
 make all
 make all
 make clean 
+ls
+cd root
+clear
+ls
+cd Toolchain
+make all
+make clean
+make all
+cd ..
+make all
+./run.sh
+clear
+ls
+./run.sh
+./run.sh
+exit
+cd root
+ls
+cd Toolchain
+make all
+cd ..
+make all
+./run.sh
+ls
+exit
+ls
+cd root
+ls
+cd Toolchain/
+ls
+make all
+cd ..
+make all
+./run.sh
+exit
+ls
+cd root
+ls
+clear
+ls
+cd Toolchain/
+ls
+make all
+cd ..
+make all
+./run.sh
+./run.sh
+./run.sh
+exit
+cd root
+ls
+cd Toolchain
+ls
+make all
+cd ..
+make all
+exit
+clear
+cd root
+ls
+cd Toolchain
+ls
+make all
+cd ..
+s
+ls
+make all
+./run.sh
+qemu-system-x86_64 --version
+exit
+ls
+cd root
+ls
+cd Toolchain/
+LS
+ls
+make all
+cd ..
+make all
+./run.sh
+pacman -S xorg-xhost
+sudo pacman -S xorg-xhost
+exit
+ls
+cd root
+ls
+./run.sh
+./run.sh
+./run.sh
+xhost +
+xhost +
+clear
+ls
+./run.sh
+exit
+ls
+cd root
+ls
+cd Toolchain
+ls
+make all
+cd ..
+make all
+./run.sh
+./run.sh
+cd root
+ls
+cd Toolchain
+make all
+make clean
+make all
+cd ..
+make all
+ls
+cd root
+ls
+cd Toolchain/
+ls
+make clean
+make all
+cd ..
+make all
+make clean
+make all
+exit
