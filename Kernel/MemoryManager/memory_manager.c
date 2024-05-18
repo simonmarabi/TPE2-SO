@@ -158,15 +158,16 @@ void free(void * ptr) {
 
 void print_mem_state() {
    ngc_print("Total Mem: 0x");
-   ngc_print(MAX_SIZE);
+   ngc_printHex(MAX_SIZE);
    ngc_print(" Bytes\n");
 
    ngc_print("Used Mem: 0x");
-   ngc_print(MAX_SIZE - freeBytesRemaining);
+   ngc_printHex(MAX_SIZE - freeBytesRemaining);
    ngc_print(" Bytes\n");
 
    ngc_print("Free Mem: 0x");
-   ngc_print(freeBytesRemaining);
-   ngc_print(" Bytes\n");
+   ngc_printHex(freeBytesRemaining);
+   ngc_print("Bytes\n");
 }
+
 #endif

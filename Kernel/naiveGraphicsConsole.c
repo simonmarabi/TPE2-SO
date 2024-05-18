@@ -194,6 +194,50 @@ void ngc_printChar(char c) {
         ngc_printNewline();
 }
 
+// Función que convierte string a un int dependiendo la base
+void ngc_strToIntBase(uint64_t value, char *buffer, uint32_t base){
+    char *p = buffer;
+    char *p1, *p2;
+    uint32_t digits = 0;
+    do
+    {
+        uint32_t remainder = value % base;
+        *p++ = (remainder < 10) ? remainder + '0': remainder + 'A' - 10;
+        digits++;
+    }
+    while(value /= base);
+
+    *p = 0;
+
+    p1 = buffer;
+    p2 = p - 1;
+    while (p1 < p2)
+    {
+        char tmp = *p1;
+        *p1 = *p2;
+        *p2 = tmp;
+        p1++;
+        p2--;
+    }
+
+    return digits;
+
+}
+
+// Función para imprimir un int base 10 en pantalla
+void ngc_printInt(uint64_t intNumber){
+    char buffer[17] = {0};
+    ngc_strToIntBase(intNumber, buffer, 10);
+    ngc_print(buffer);
+}
+
+// Función para imprimir un hex en pantalla
+void ngc_printHex(uint64_t hexNumber){
+    char buffer[21] = {0};
+    ngc_strToIntBase(hexNumber, buffer, 16);
+    ngc_print(buffer);
+}
+
 // Función para imprimir una cadena en la pantalla
 void ngc_print(const char * string){
     for(int i = 0; string[i]!= '\0';i++){

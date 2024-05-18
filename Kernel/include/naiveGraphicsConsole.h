@@ -20,6 +20,10 @@ void ngc_printChar(char c);
 
 void ngc_print(const char * s);
 
+void ngc_printInt(uint64_t intNumber);
+
+void ngc_printHex(uint64_t hexNumber);
+
 uint16_t ngc_getHeight(); 
 
 uint16_t ngc_getWidth(); 

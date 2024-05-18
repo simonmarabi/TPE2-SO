@@ -441,3 +441,14 @@ make all
 make clean
 make all
 exit
+cd root
+ls
+make clean
+make all
+clear
+ls
+make clean
+make all
+clear
+l
+exit

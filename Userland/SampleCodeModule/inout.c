@@ -107,7 +107,7 @@ char do_getChar(){
 // Función scanf para leer entrada con formato variable
 void scanf(char * format,...){
 	//lectura del buffer
-	char buffer[MAX_BUFFER];
+	char buffer[MAX_BUFFER] = {0};
 	if(sys_read(KBDIN, buffer, MAX_BUFFER) == -1) {
 		return;
 	}
