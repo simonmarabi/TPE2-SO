@@ -156,7 +156,7 @@ void free(void * ptr) {
     addNodeToFreeList((freeNode *)node);
 }
 
-void print_mem_state() {
+void printMem() {
    ngc_print("Total Mem: 0x");
    ngc_printHex(MAX_SIZE);
    ngc_print(" Bytes\n");

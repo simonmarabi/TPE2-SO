@@ -13,4 +13,4 @@ void setupBuddy();
 
 #endif
 
-void print_mem_state();
+void printMem();

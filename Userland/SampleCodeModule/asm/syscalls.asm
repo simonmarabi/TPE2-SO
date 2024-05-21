@@ -10,6 +10,9 @@ GLOBAL sys_paint_rect
 GLOBAL sys_getTicks
 GLOBAL sys_timed_read
 GLOBAL sys_beeper
+GLOBAL sys_printMem
+GLOBAL sys_alloc
+GLOBAL sys_free
 
 section .text
 sys_read:
@@ -65,5 +68,20 @@ sys_getTicks:
 
 sys_beeper:
     mov rax, 0x0A       ; Número de función para sys_beeper
+    int 80h             ; Realizar la llamada al sistema
+    ret
+
+sys_printMem:
+    mov rax, 0x0B       ; Número de función para sys_printMem
+    int 80h             ; Realizar la llamada al sistema
+    ret
+
+sys_alloc:
+    mov rax, 0x0C       ; Número de función para sys_alloc
+    int 80h             ; Realizar la llamada al sistema
+    ret
+
+sys_free:
+    mov rax, 0x0D       ; Número de función para sys_free
     int 80h             ; Realizar la llamada al sistema
     ret

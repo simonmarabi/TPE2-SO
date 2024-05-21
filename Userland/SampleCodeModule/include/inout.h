@@ -31,5 +31,6 @@ char do_getChar();
 
 void do_putChar(char c);
 
+void do_printMem();
 
 #endif

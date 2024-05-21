@@ -195,7 +195,7 @@ void ngc_printChar(char c) {
 }
 
 // Función que convierte string a un int dependiendo la base
-void ngc_strToIntBase(uint64_t value, char *buffer, uint32_t base){
+uint32_t ngc_strToIntBase(uint64_t value, char *buffer, uint32_t base){
     char *p = buffer;
     char *p1, *p2;
     uint32_t digits = 0;
@@ -221,7 +221,6 @@ void ngc_strToIntBase(uint64_t value, char *buffer, uint32_t base){
     }
 
     return digits;
-
 }
 
 // Función para imprimir un int base 10 en pantalla

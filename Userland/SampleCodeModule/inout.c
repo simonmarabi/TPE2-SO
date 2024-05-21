@@ -256,3 +256,8 @@ void printf (const char *format, ...) {
     }
     va_end(p_arg);
 }
+
+// Función para imprimir el estado de la memoria
+void do_printMem() {
+	sys_printMem();	
+}

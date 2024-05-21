@@ -7,6 +7,7 @@
 #include <time.h>
 #include <speaker.h>
 #include <interrupts.h>
+#include <memory_manager.h>
 
 extern uint64_t info[17];
 extern uint8_t screenshot;
@@ -91,6 +92,18 @@ static void sys_beeper_handler(uint64_t frequency, uint64_t interval) {
     stopBeep();
 }
 
+static void sys_memstate_handler(){
+    printMem();
+}
+
+static void * sys_alloc_handler(unsigned long size){
+    return alloc(size);
+}
+
+static void sys_free_handler(void *memptr){
+    free(memptr);
+}
+
 // Vector de punteros a funciones de llamada al sistema
 static syscallT syscalls[]  = {
     (syscallT) sys_read_handler, 
@@ -103,7 +116,10 @@ static syscallT syscalls[]  = {
     (syscallT) sys_screenData_handler, 
     (syscallT) sys_paint_rect_handler, 
     (syscallT) sys_ticks_handler, 
-    (syscallT) sys_beeper_handler
+    (syscallT) sys_beeper_handler,
+    (syscallT) sys_memstate_handler,
+    (syscallT) sys_alloc_handler,
+    (syscallT) sys_free_handler
 };
 
 // Función para despachar llamadas al sistema

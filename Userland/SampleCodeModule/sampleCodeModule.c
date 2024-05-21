@@ -7,7 +7,7 @@
 #include <colors.h>
 
 // Arreglo de comandos disponibles
-static char* commands[] = {"help", "invalidopcode", "dividebyzero", "inforeg", "time", "changefontsize", "snakes", "clear"};
+static char* commands[] = {"help", "invalidopcode", "dividebyzero", "inforeg", "time", "changefontsize", "snakes", "clear","memstate"};
 
 // Declaración de funciones de comandos disponibles
 static void (*commands_functions[])(int argc, char parameters[MAX_PARAMETERS][LENGTH_PARAMETERS]) = {
@@ -18,7 +18,8 @@ static void (*commands_functions[])(int argc, char parameters[MAX_PARAMETERS][LE
 	time, 
 	changeFontSize, 
 	snakes, 
-	clearScreen
+	clearScreen,
+	printMem
 };
 
 // Función para encontrar el índice de un comando en el arreglo de comandos

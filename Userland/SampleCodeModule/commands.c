@@ -20,7 +20,8 @@ void help(int argc, char params[MAX_PARAMETERS][LENGTH_PARAMETERS]){
 	"\ttime                 Command to display the system day and time.\n"
 	"\tchangefontsize       Changes font size: insert 1 2 3 for the desired level.\n"
 	"\tsnakes               Get ready to play Snakes!.\n"
-	"\tclear                Clear screen\n";
+	"\tclear                Clear screen\n"
+	"\tmemstate             Prints on screen memory state\n";
 	printf(helpstring);
 }
 
@@ -100,3 +101,10 @@ void clearScreen(int argc, char params[][LENGTH_PARAMETERS]) {
 	do_clearScreen(BLACK);
 	return;
 }
+
+// Función para obtener el estado de la memoria (sin parámetros)
+void printMem(int argc, char params[][LENGTH_PARAMETERS]){
+	do_printMem();
+	return;
+}
+

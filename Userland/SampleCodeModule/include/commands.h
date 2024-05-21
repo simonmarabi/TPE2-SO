@@ -23,4 +23,6 @@ void snakes(int argc, char params[][LENGTH_PARAMETERS]);
 
 void clearScreen(int argc, char params[][LENGTH_PARAMETERS]);
 
+void printMem(int argc, char params[][LENGTH_PARAMETERS]);
+
 #endif

@@ -246,7 +246,7 @@ void free(void memory)
 
 
 
-void print_mem_state()
+void printMem()
 {
     ngc_print("Total Memory: 0x");
     ngc_printhex(MAX_SIZE);

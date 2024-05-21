@@ -29,4 +29,9 @@ void sys_clear_screen(uint64_t color);
 
 void sys_beeper(uint64_t frequency, uint64_t seconds);
 
+void sys_printMem();
+
+void * sys_alloc(unsigned long size);
+
+void sys_free(void * memptr);
 #endif
