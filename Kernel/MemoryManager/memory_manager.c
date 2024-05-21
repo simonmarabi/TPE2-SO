@@ -167,7 +167,7 @@ void printMem() {
 
    ngc_print("Free Mem: 0x");
    ngc_printHex(freeBytesRemaining);
-   ngc_print("Bytes\n");
+   ngc_print(" Bytes\n");
 }
 
 #endif

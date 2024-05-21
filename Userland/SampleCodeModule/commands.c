@@ -21,7 +21,7 @@ void help(int argc, char params[MAX_PARAMETERS][LENGTH_PARAMETERS]){
 	"\tchangefontsize       Changes font size: insert 1 2 3 for the desired level.\n"
 	"\tsnakes               Get ready to play Snakes!.\n"
 	"\tclear                Clear screen\n"
-	"\tmemstate             Prints on screen memory state\n";
+	"\tmem                  Prints on screen memory state\n";
 	printf(helpstring);
 }
 
