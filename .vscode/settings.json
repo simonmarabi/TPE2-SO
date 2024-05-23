@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "naivegraphicsconsole.h": "c",
-        "modulepacker.h": "c"
+        "modulepacker.h": "c",
+        "initializer_list": "c",
+        "xutility": "c"
     }
 }
