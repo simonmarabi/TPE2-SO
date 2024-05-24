@@ -25,9 +25,9 @@ static void removeSemaphore (semaphoreID idToRemove)
         free(iterator);
         return;
     }
-    while (it->next != NULL)
+    while (iterator->next != NULL)
     {
-        if (iterator->next->id == id)
+        if (iterator->next->id == idToRemove)
         {
             semaphore * aux = iterator->next;
             iterator->next = iterator->next->next;
@@ -102,7 +102,7 @@ static PID popBlockedQueue(processQueue * queue)
     if (queue->first == NULL)
         queue->last = NULL;
     free(toRemove);
-    return pid
+    return pid;
 }
 
 static void addSemaphore(semaphore * toAdd)
@@ -217,17 +217,74 @@ void semaphorePrintPIDs(semaphoreID id)
             return;
         }
         iterator=iterator->next;
+        }
+        
+    }
+
+int semaphoreWait(semaphoreID id)
+{
+    semaphore * sem = searchSemaphore(id);
+    if (sem == NULL)
+    {
+        return -1;
+    }
+    acquire(&(sem->lock));
+    if (sem->value > 0)
+        sem->value -= 1;
+    else
+    {
+        release(&(sem->lock));
+        sleep(&(sem->blockedQueue));
+        acquire(&(sem->lock));
+        sem->value -= 1;
+    }
+    release(&(sem->lock));
+    return 0;
+    
+}
+int semaphorePost(semaphoreID id)
+{
+    semaphore * sem = searchSemaphore(id);
+    if (sem == NULL) return -1;
+    acquire(&(sem->lock));
+    sem->value += 1;
+    wakeup(&(sem->blockedQueue));
+    release(&(sem->lock));
+    yield();
+    return 0;
+}
+int semaphoreClose(semaphoreID id)
+{
+    semaphore * sem = searchSemaphore(id);
+    if (sem == NULL) return -1;
+
+    if (!verifyPID(&(sem->activeQueue),getPid())) return -2;
+
+    removeFromQueue(&(sem->activeQueue),getPid());
+    if (sem->activeQueue.first == NULL) removeSemaphore(sem->id);
+
+    return 1;
+}
+
+void semaphorePrintAll()
+{
+    println("SEMAFORE ID | VALUE | BLOCKED PROCESSES");
+    semaphore * it = semaphoreList;
+    
+    while (it != NULL)
+    {
+        printStats(it);
+        it = it->next;
     }
     
 }
 
-int semaphoreWait(semaphoreID id);
-int semaphorePost(semaphoreID id);
-int semaphoreClose(semaphoreID id);
-
-void semaphorePrintAll()
+int deleteSemaphore(semaphoreID id)
 {
-
+    semaphore * sem = searchSemaphore(id);
+    if(sem == NULL)
+        return -1;
+    
+    removeSemaphore(sem->id);
+    return 1;
 }
-
-void deleteSemaphore(semaphoreID id);

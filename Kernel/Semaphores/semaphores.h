@@ -38,5 +38,5 @@ int semaphoreWait(semaphoreID id);
 int semaphorePost(semaphoreID id);
 int semaphoreClose(semaphoreID id);
 void semaphorePrintAll();
-int semaphorePrintPIDs(semaphoreID id);
-void deleteSemaphore(semaphoreID id);
+void semaphorePrintPIDs(semaphoreID id);
+int deleteSemaphore(semaphoreID id);

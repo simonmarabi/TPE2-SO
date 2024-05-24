@@ -3,6 +3,7 @@
         "naivegraphicsconsole.h": "c",
         "modulepacker.h": "c",
         "initializer_list": "c",
-        "xutility": "c"
+        "xutility": "c",
+        "semaphores.h": "c"
     }
 }
