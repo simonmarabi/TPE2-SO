@@ -3,6 +3,7 @@
 static semaphore * searchSemaphore(semaphoreID searchedID)
 {
     semaphore * iterator = semaphoreList;
+    
     while (iterator != NULL)
     {
         if (iterator->id == searchedID)

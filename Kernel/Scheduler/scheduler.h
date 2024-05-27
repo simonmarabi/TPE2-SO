@@ -1,8 +1,6 @@
 #pragma once
-//#include <processManagent.h>
-#include <stdint.h>
-#include <memory_manager.h>
 
+#include "processManagement.h"
 
 typedef struct ProcessNode {
     

@@ -1,22 +1,22 @@
 #pragma once
 
 #include <stdint.h>
-//#include <fd.h>
-
-typedef int PID;
+#include <fd.h>
 
 #define PROC_MEM (8*1024)
 
-typedef enum State
-{
+typedef int PID;
+
+typedef enum State{
+
     READY = 1,
     BLOCKED,
     TERMINATED
 
 }State;
 
-typedef enum Priority
-{
+typedef enum Priority{
+    
     LOW = 1,
     MEDIUM,
     HIGH
@@ -30,7 +30,7 @@ typedef enum Background{
 
 }Background;
 
-typedef struct {
+typedef struct PCB{
 
     PID pid;
     State state;
@@ -40,9 +40,10 @@ typedef struct {
     char ** argv;
     Priority priority;
     Background background;
-    //int fd[MAX_FD];
+    int fd[MAX_FD];
 
 }PCB;
 
 PID processCreate(void * program, unsigned int argc,char ** argv);
+
 void processRun(PID pid);

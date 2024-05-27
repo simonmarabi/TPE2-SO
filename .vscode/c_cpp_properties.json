@@ -1,35 +1,29 @@
 {
     "configurations": [
         {
-<<<<<<< HEAD
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
+                "/mnt/c/Users/Simon/OneDrive/Desktop/TPE2-SO/**",
+                "${workspaceFolder}/Kernel/pipe/include",
+                "${workspaceFolder}/Kernel/Scheduler",
+                "${workspaceFolder}/Kernel/Semaphores",
                 "${workspaceFolder}/Kernel/MemoryManager",
-                "${workspaceFolder}/Kernel/pipe/include"
+                "${workspaceFolder}/Kernel/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c17",
             "cppStandard": "gnu++17",
-            "intelliSenseMode": "linux-gcc-x64"
-=======
-            "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/Kernel/Semaphores"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.19041.0",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64",
-            "configurationProvider": "ms-vscode.makefile-tools"
->>>>>>> c3f34b528146f0105e6e1784913606d7a1c1246c
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerPathInCppPropertiesJson": "/usr/bin/gcc",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "/mnt/c/Users/Simon/OneDrive/Desktop/TPE2-SO/**",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4

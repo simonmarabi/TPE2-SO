@@ -4,15 +4,16 @@
 #include <stdlib.h>
 #include <fd.h>
 #include <memory_manager.h>
-// #include <console.h>
-// #include <scheduler.h>
-// #include <semaphores.h>
+#include <naiveGraphicsConsole.h>
+#include <scheduler.h>
+#include <semaphores.h>
 
 
-typedef enum fdType 
-{
+typedef enum fdType {
+
     READ = 0,
     WRITE,
+    
 }fdType;
 
 typedef struct Pipe * pPipe;

@@ -7,6 +7,7 @@
 static int semcounter = 0;
 
 struct Pipe {
+    
     char buf[PIPE_BUFFER];
     uint32_t readIdx;
     uint32_t writeIdx;
@@ -16,6 +17,6 @@ struct Pipe {
     int readPID;
     int writePID;
 
-    semID writeQueue
+    semaphoreID writeQueue;
 
-}
+}Pipe;

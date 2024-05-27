@@ -4,7 +4,7 @@
 #include <interrupts.h>
 #include <scheduler.h>
 
-#define DEFAULT_PRIORITY MEDIOUM
+#define DEFAULT_PRIORITY MEDIUM
 #define DEFAULT_BACKGROUND BACKGROUND
 
 static PID pid = 0;
@@ -32,14 +32,17 @@ typedef struct {
 } RegState;
 
 typedef struct {
+
     RegState regs;
-    void* ri;
+    void* rip;
     uint64_t cs;
     uint64_t rflags;
     void* rsp;
     void* ss;
     uint64_t align;
+
 } ProcState;
+
 #pragma pack(pop)
 
 static uint64_t strcpy(char* to, const char * from){
@@ -99,7 +102,8 @@ PID processCreate(void * program, unsigned int argc, char** argv){
     p->cs = 8;
     p->regs.rbp = (uint64_t)rsp;
     p->rsp = rsp;
-    p->rflags = program;
+    p->rflags = 0x202;
+    p->rip = program;
 
     p->regs.rdi = (uint64_t)argc;
     p->regs.rsi = (uint64_t)newProcArgv;
@@ -124,7 +128,7 @@ PID processCreate(void * program, unsigned int argc, char** argv){
         forkfd(tempPCB.fd);
     pid++;
 
-    if(schedulerAddPRocess(tempPCB) < 0){
+    if(schedulerAddProcess(tempPCB) < 0){
         free(memStart);
         return -1;
     }

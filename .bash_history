@@ -1,13 +1,3 @@
-cd 
-ls
-make clean all
-./run.sh
-ls
-run.sh
-cd /rooyt
-cd /root
-ls
-cd Toolchain/
 ls
 make clean all
 cd ..
@@ -451,4 +441,60 @@ make clean
 make all
 clear
 l
+exit
+cd root
+make clean
+cd ToolChian
+cd ToolChain
+make clean
+make all
+cd ..
+make all
+make clean
+cd ToolChain
+make clean
+make all
+cd ..
+make all
+ls
+make clean
+cd ToolChain
+make all
+cd ..
+make all
+ls
+cd root
+ld
+ls
+make cleanm
+make clean
+ls
+clear
+cd ToolChain
+make clena
+make clean
+make all
+cd ..
+make all
+clear
+make clean
+cd ToolChain
+make clean
+cd ...
+cd ..
+make clean
+cd Toolchain
+make all
+cd ..
+make all
+clear
+ls
+make clean
+cd Toolchain
+make clean
+make all
+cd .
+cd ..
+make all
+ls
 exit

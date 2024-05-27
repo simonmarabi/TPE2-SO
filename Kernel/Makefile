@@ -32,12 +32,12 @@
 include Makefile.inc
 
 KERNEL=kernel.bin
-SOURCES= $(wildcard *.c) $(wildcard MemoryManager/*.c)
-DIRS = -I./include -I./MemoryManager
+SOURCES= $(wildcard *.c) $(wildcard MemoryManager/*.c) $(wildcard Scheduler/*.c) $(wildcard pipe/*.c) $(wildcard interruptions/*.c) $(wildcard Semaphores/*.c)
+DIRS = -I./include -I./MemoryManager -I./Scheduler -I./pipe/include -I./pipe  -I./interruptions -I./Semaphores
 SOURCES_ASM= $(wildcard asm/*.asm)
 OBJECTS= $(SOURCES:.c=.o)
 OBJECTS_ASM= $(SOURCES_ASM:.asm=.o)
-LOADERSRC = loader.asm
+LOADERSRC = asm/loader.asm
 
 LOADEROBJECT= $(LOADERSRC:.asm=.o)
 STATICLIBS=

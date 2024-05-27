@@ -4,6 +4,9 @@
         "modulepacker.h": "c",
         "initializer_list": "c",
         "xutility": "c",
-        "semaphores.h": "c"
+        "semaphores.h": "c",
+        "processmanagement.h": "c",
+        "fd.h": "c",
+        "stdint.h": "c"
     }
 }
