@@ -7,6 +7,8 @@
         "semaphores.h": "c",
         "processmanagement.h": "c",
         "fd.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "scheduler.h": "c",
+        "pipe.h": "c"
     }
 }

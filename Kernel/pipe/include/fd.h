@@ -1,5 +1,6 @@
 #pragma once
-#include <stdint.h>
+
+//#include <stdint.h>
 #include <pipe.h>
 
 #define MAX_FD 255

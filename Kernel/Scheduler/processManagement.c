@@ -128,7 +128,7 @@ PID processCreate(void * program, unsigned int argc, char** argv){
         forkfd(tempPCB.fd);
     pid++;
 
-    if(schedulerAddProcess(tempPCB) < 0){
+    if(schedulerAddProcess(tempPCB)< 0){
         free(memStart);
         return -1;
     }

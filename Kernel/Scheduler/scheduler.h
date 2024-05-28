@@ -1,30 +1,31 @@
 #pragma once
 
-#include "processManagement.h"
+#include <processManagement.h>
+#include <stdint.h>
 
-typedef struct ProcessNode {
+// typedef struct ProcessNode {
     
-    struct ProcessNode * prev;
-    struct ProcessNode * next;
+//     struct ProcessNode * prev;
+//     struct ProcessNode * next;
 
-    PCB pcb;
-    size_t priorityCounter;
+//     PCB pcb;
+//     size_t priorityCounter;
     
-}ProcessNode;
+// }ProcessNode;
 
-typedef struct{
-   ProcessNode * first; 
-} BlockedList;
+// typedef struct{
+//    ProcessNode * first; 
+// } BlockedList;
 
-typedef struct {
-    ProcessNode * current;
-    size_t counter;
-}ReadyList;
+// typedef struct {
+//     ProcessNode * current;
+//     size_t counter;
+// }ReadyList;
 
-static ReadyList readyList;
-static BlockedList blockedList;
+// static ReadyList readyList;
+// static BlockedList blockedList;
 
-static void * haltRsp;
+// static void * haltRsp;
 
 void * scheduler(void * rsp);
 int schedulerAddProcess(PCB pcb);

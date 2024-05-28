@@ -1,7 +1,5 @@
 #pragma once
-
-#include <stdint.h>
-#include <fd.h>
+#include "fd.h"
 
 #define PROC_MEM (8*1024)
 
