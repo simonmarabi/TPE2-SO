@@ -11,6 +11,7 @@
         "scheduler.h": "c",
         "pipe.h": "c",
         "memory_manager.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "spinlock.h": "c"
     }
 }

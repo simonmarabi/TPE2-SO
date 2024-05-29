@@ -5,6 +5,7 @@
 #include <processManagement.h>
 #include <scheduler.h>
 #include <memory_manager.h>
+#include <naiveGraphicsConsole.h>
 
 
 typedef int semaphoreID;

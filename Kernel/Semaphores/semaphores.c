@@ -12,7 +12,7 @@ static semaphore * searchSemaphore(semaphoreID searchedID)
         }
         iterator = iterator->next;
     }
-    
+    return iterator;
 }
 
 static void removeSemaphore (semaphoreID idToRemove)
@@ -35,7 +35,7 @@ static void removeSemaphore (semaphoreID idToRemove)
             free(aux);
             return;
         }
-        iterator->next;
+        iterator = iterator->next;
     }
     
 }
@@ -127,7 +127,7 @@ int semaphoreOpen(semaphoreID id,uint64_t value)
     semaphore * toAdd = searchSemaphore(id);
     if (toAdd != NULL)
     {
-        addToProcessQueue(&(toAdd->activeQueue),getpid(),1);
+        addToProcessQueue(&(toAdd->activeQueue), getPID() ,1);
         return 0;
     }
     toAdd = alloc(sizeof(semaphore));
@@ -140,7 +140,7 @@ int semaphoreOpen(semaphoreID id,uint64_t value)
     toAdd->activeQueue.first = NULL;
     toAdd->activeQueue.last = NULL;
     toAdd->next = NULL;
-    addToProcessQueue(&(toAdd->activeQueue),getpid(),1);
+    addToProcessQueue(&(toAdd->activeQueue),getPID(),1);
     initLock(&toAdd->lock);
     addSemaphore(toAdd);
     return 1;
@@ -155,7 +155,7 @@ static void wakeup(processQueue *queue)
 
 static void sleep(processQueue *queue)
 {
-    PID pid = getpid();
+    PID pid = getPID();
     addToProcessQueue(queue,pid,0);
     blockProcess(pid);
 
@@ -175,25 +175,26 @@ static int verifyPID(processQueue * activeQueue, PID pid)
 
 static void printStats(semaphore *sem)
 {
-    print(sem->id);
-    print(" | ");
-    printnum(sem->value);
-    print(" | ");
+    ngc_printInt(sem->id);
+    ngc_print(" | ");
+    ngc_printInt(sem->value);
+    ngc_print(" | ");
 
     processNode * iterator = sem->blockedQueue.first;
     if (iterator == NULL)
     {
-        print("-");
-        newLine();
+        ngc_print("-");
+        ngc_printNewline();
+
         return;
     }
     while(iterator != NULL)
     {
-        printnum(iterator->pid);
-        print(" ");
+        ngc_printInt(iterator->pid);
+        ngc_print(" ");
         iterator = iterator->next;
     }
-    newLine();
+    ngc_printNewline();
 }
 
 void semaphorePrintPIDs(semaphoreID id)
@@ -206,13 +207,13 @@ void semaphorePrintPIDs(semaphoreID id)
             processNode * it = iterator->blockedQueue.first;
             if (it==NULL)
             {
-                print("-");
+                ngc_print("-");
                 return;
             }
             while (it != NULL)
             {
-                printnum(it->pid);
-                print(" ");
+                ngc_printInt(it->pid);
+                ngc_print(" ");
                 it = it->next;
             }
             return;
@@ -259,9 +260,9 @@ int semaphoreClose(semaphoreID id)
     semaphore * sem = searchSemaphore(id);
     if (sem == NULL) return -1;
 
-    if (!verifyPID(&(sem->activeQueue),getPid())) return -2;
+    if (!verifyPID(&(sem->activeQueue),getPID())) return -2;
 
-    removeFromQueue(&(sem->activeQueue),getPid());
+    removeFromQueue(&(sem->activeQueue),getPID());
     if (sem->activeQueue.first == NULL) removeSemaphore(sem->id);
 
     return 1;
@@ -269,7 +270,7 @@ int semaphoreClose(semaphoreID id)
 
 void semaphorePrintAll()
 {
-    println("SEMAFORE ID | VALUE | BLOCKED PROCESSES");
+    ngc_print("SEMAFORE ID | VALUE | BLOCKED PROCESSES\n");
     semaphore * it = semaphoreList;
     
     while (it != NULL)

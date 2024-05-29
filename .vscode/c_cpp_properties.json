@@ -8,7 +8,9 @@
                 "${workspaceFolder}/Kernel/Scheduler",
                 "${workspaceFolder}/Kernel/Semaphores",
                 "${workspaceFolder}/Kernel/MemoryManager",
-                "${workspaceFolder}/Kernel/include"
+                "${workspaceFolder}/Kernel/include",
+                "${workspaceFolder}/Kernel/include",
+                "${workspaceFolder}/Kernel/pipe"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

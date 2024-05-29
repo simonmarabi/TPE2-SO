@@ -35,7 +35,7 @@ int64_t blockProcess(PID pid);
 int64_t unblockProcess(PID pid);
 int64_t terminateProcess(PID pid);
 int64_t changePriority(PID pid,Priority priority);
-void yeild(void);
+void yield(void);
 void int20(void);
 int mapStdFds(PID pid, int stdin, int stdout);
 int fdLocalToGlobal(int fd);
