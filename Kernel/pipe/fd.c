@@ -1,4 +1,7 @@
 #include <fd.h>
+#include <pipe.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 typedef struct fd{
 
