@@ -1,8 +1,8 @@
 #include <processManagement.h>
-#include <memory_manager.h>
-#include <naiveGraphicsConsole.h>
-#include <interrupts.h>
-#include <scheduler.h>
+//#include <memory_manager.h>
+//#include <naiveGraphicsConsole.h>
+//#include <interrupts.h>
+//#include <scheduler.h>
 
 #define DEFAULT_PRIORITY MEDIUM
 #define DEFAULT_BACKGROUND BACKGROUND

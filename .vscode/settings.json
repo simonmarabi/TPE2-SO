@@ -9,6 +9,8 @@
         "fd.h": "c",
         "stdint.h": "c",
         "scheduler.h": "c",
-        "pipe.h": "c"
+        "pipe.h": "c",
+        "memory_manager.h": "c",
+        "stdlib.h": "c"
     }
 }
