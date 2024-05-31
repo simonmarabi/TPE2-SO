@@ -8,8 +8,6 @@
 
 #define PROC_MEM (8*1024)
 
-
-
 typedef int PID;
 
 typedef enum State{
