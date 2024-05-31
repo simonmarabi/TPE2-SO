@@ -21,10 +21,6 @@ typedef struct {
     size_t counter;
 }ReadyList;
 
-static ReadyList readyList;
-static BlockedList blockedList;
-
-static void * haltRsp;
 
 void * scheduler(void * rsp);
 int schedulerAddProcess(PCB pcb);
@@ -36,7 +32,7 @@ int64_t unblockProcess(PID pid);
 int64_t terminateProcess(PID pid);
 int64_t changePriority(PID pid,Priority priority);
 void yield(void);
-void int20(void);
+void _int20(void);
 int mapStdFds(PID pid, int stdin, int stdout);
 int fdLocalToGlobal(int fd);
 void addFd(uint32_t fd);

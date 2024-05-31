@@ -10,7 +10,8 @@
                 "${workspaceFolder}/Kernel/MemoryManager",
                 "${workspaceFolder}/Kernel/include",
                 "${workspaceFolder}/Kernel/include",
-                "${workspaceFolder}/Kernel/pipe"
+                "${workspaceFolder}/Kernel/pipe",
+                "${workspaceFolder}/Userland/SampleCodeModule/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

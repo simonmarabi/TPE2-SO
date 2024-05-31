@@ -1,5 +1,7 @@
 #include <semaphores.h>
 
+static semaphore * semaphoreList = NULL;
+
 static semaphore * searchSemaphore(semaphoreID searchedID)
 {
     semaphore * iterator = semaphoreList;
@@ -117,6 +119,17 @@ static void addSemaphore(semaphore * toAdd)
     while (iterator->next != NULL)
     {
         iterator = iterator->next;
+
+
+
+
+
+
+
+
+
+
+        
     }
     iterator->next = toAdd;
     

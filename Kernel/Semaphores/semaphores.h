@@ -32,7 +32,6 @@ typedef struct semaphore
 
 }semaphore;
 
-static semaphore * semaphoreList = NULL;
 
 int semaphoreOpen(semaphoreID id,uint64_t value);
 int semaphoreWait(semaphoreID id);

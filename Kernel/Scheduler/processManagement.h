@@ -4,7 +4,6 @@
 #include <memory_manager.h>
 #include <naiveGraphicsConsole.h>
 #include <interrupts.h>
-
 //#include <scheduler.h>
 
 #define PROC_MEM (8*1024)

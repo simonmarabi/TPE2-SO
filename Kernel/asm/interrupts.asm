@@ -17,6 +17,8 @@ GLOBAL _irq80Handler
 GLOBAL _invalidOpCodeInterruption
 GLOBAL _divisionByZeroInterruption
 
+GLOBAL _int20
+
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN syscallDispatcher
@@ -149,6 +151,9 @@ SECTION .text
 	iretq
 %endmacro
 
+_int20:
+	int 20h
+	ret
 
 _hlt:
 	sti
