@@ -1,11 +1,7 @@
 #pragma once
 
-#include <memory_manager.h>
-#include <naiveGraphicsConsole.h>
-#include <interrupts.h>
+#include <stdint.h>
 #include <fd.h>
-//#define MAX_FD 255
-//#include <scheduler.h>
 
 #define PROC_MEM (8*1024)
 
