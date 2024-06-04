@@ -69,7 +69,7 @@ INCLUDE_DIRS=include
 INCLUDES=$(addprefix -I ,$(INCLUDE_DIRS))
 
 # Código .c y .asm
-SOURCES=$(wildcard *.c) $(wildcard interruptions/*.c) $(wildcard drivers/*.c) $(wildcard MemoryManager/*.c) $(wildcard pipe/*.c)
+SOURCES=$(wildcard *.c) $(wildcard interruptions/*.c) $(wildcard drivers/*.c) $(wildcard MemoryManager/*.c) $(wildcard Scheduler/*.c) $(wildcard Semaphores/*.c) $(wildcard pipe/*.c)
 SOURCES_ASM=$(wildcard asm/*.asm) $(wildcard interruptions/asm/*.asm) $(wildcard drivers/asm/*.asm)
 
 GCCDEFS=

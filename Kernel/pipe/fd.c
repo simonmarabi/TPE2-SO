@@ -27,7 +27,7 @@ int64_t initFd(fdType type, pPipe pipe){
     return -1;
 }
 
-int64_t closefd(uint64_t id){
+int64_t closeFd(uint64_t id){
     
     if(id > MAX_FD || fdTable[id].ref == 0){
         return -1;

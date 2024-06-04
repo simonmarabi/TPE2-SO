@@ -2,6 +2,7 @@
 
 #include <processManagement.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef struct ProcessNode {
     

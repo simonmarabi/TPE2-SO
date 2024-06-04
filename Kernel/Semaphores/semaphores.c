@@ -108,8 +108,8 @@ static PID popBlockedQueue(processQueue * queue)
     return pid;
 }
 
-static void addSemaphore(semaphore * toAdd)
-{
+static void addSemaphore(semaphore * toAdd){
+    
     semaphore * iterator = semaphoreList;
     if (iterator == NULL)
     {
@@ -119,20 +119,9 @@ static void addSemaphore(semaphore * toAdd)
     while (iterator->next != NULL)
     {
         iterator = iterator->next;
-
-
-
-
-
-
-
-
-
-
-        
     }
+
     iterator->next = toAdd;
-    
 }
 
 int semaphoreOpen(semaphoreID id,uint64_t value)
