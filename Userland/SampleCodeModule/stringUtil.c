@@ -56,7 +56,7 @@ uint64_t _strlen(const char * str){
 }
 
 // Función para comparar dos cadenas de caracteres.
-int _strcmp(char *str1, char *str2){
+int _strcmp(const char *str1, const char *str2){
 	while( ( *str1 != '\0' && *str2 != '\0' ) && *str1 == *str2 )
     {
         str1++;
@@ -80,4 +80,71 @@ int strtoi(char * buffer, int * i){
 	}
 	uint64_t out = atoi(strnum);
 	return out;
+}
+
+uint32_t uintToBase(uint32_t value, char *buffer, uint32_t base)
+{
+    char *p = buffer;
+    char *p1, *p2;
+    uint32_t digits = 0;
+
+    do
+	{
+		uint32_t remainder = value % base;
+		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+		digits++;
+	}
+	while (value /= base);
+
+	*p = 0;
+
+	p1 = buffer;
+	p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1 = *p2;
+		*p2 = tmp;
+		p1++;
+		p2--;
+	}
+
+	return digits;
+}
+
+int64_t strToIntBase(const char * s, int len, uint32_t base, int * result, int unsign) {
+	int sign = 1;
+	uint8_t aux = 0;
+	uint32_t num = 0;
+	int i;
+	if (!unsign && s[0] == '-') {
+        s++;
+    	sign = -1;
+    }
+    for (i = 0; s[i] != 0 && ((len < 0)? 1 : i < len) ; i++)
+    {	
+        if (s[i] <= '9') {
+			aux = s[i] - '0';
+		}
+		else 
+			aux = toUpper(s[i]) + 10 - 'A';
+
+		if (aux >= base)
+		{
+			break;
+		}
+
+		num *= base;
+		num += aux;
+	}   
+	num *= sign;
+	if (i != 0)
+	{
+		*result = num;
+	}
+	return sign == 1? i : i + 1;
+}
+
+uint8_t toUpper(uint8_t c) {
+	return c >= 'a' && c <= 'z'? c - 'a' + 'A' : c;
 }

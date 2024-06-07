@@ -9,6 +9,8 @@
 #include <naiveGraphicsConsole.h>
 #include <interrupts.h>
 #include <speaker.h>
+#include <processManagement.h>
+#include <scheduler.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -50,18 +52,51 @@ void * initializeKernelBinary()
 
 	clearBSS(&bss, &endOfKernel - &bss);
 
+	#ifdef BUDDY
+	setupBuddy();
+	#endif 
+
 	return getStackBase();
+}
+
+void haltProc()
+{
+	while(1) _hlt();
 }
 
 int main()
 {	
 
+	_cli();
+	#ifdef BUDDY
+	ngc_print("[MEMORY] Using Buddy Allocator\n");
+	#else
+	ngc_print("[MEMORY] Using Default Allocator\n");
+	#endif
+
+	char* argv[]= {0};
+	ngc_print("TEST 1\n");
+
+	PID pid = processCreate(&haltProc,0,argv);
+	char * argvshell[] = {"shell"};
+	ngc_print("TEST 2\n");
+
+	pid = processCreate(sampleCodeModuleAddress,1,argvshell);
+	ngc_print("TEST 3\n");
+	changePriority(pid,HIGH);
+	ngc_print("TEST 4\n");
+	setBackground(pid,FOREGROUND);
+	ngc_print("TEST 5\n");
 	//carga
 	load_idt();
+	ngc_print("TEST 6\n");
+	ngc_print("Waiting for Processes to Run...\n");
+	ngc_print("TEST 7\n");
+
 
 	((EntryPoint)sampleCodeModuleAddress)();
 	
-
-	while(1);
+	while(1) _hlt();
+	
 	return 0;
 }

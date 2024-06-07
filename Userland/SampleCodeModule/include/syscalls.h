@@ -6,6 +6,30 @@
 #define STDERR 2
 #define KBDIN 3
 
+typedef int PID;
+
+typedef int semID;
+
+typedef enum Priority
+{
+    LOW = 1,
+    MEDIUM,
+    HIGH,
+} Priority;
+
+
+typedef enum Background
+{
+    FOREGROUND=0,
+    BACKGROUND=1
+}Background;
+
+typedef enum fdType
+{
+    READ =0,
+    WRITE
+}fdType;
+
 
 extern void sys_write(uint64_t fd, const char * buffer, uint64_t count);
 
@@ -34,4 +58,41 @@ void sys_printMem();
 void * sys_alloc(unsigned long size);
 
 void sys_free(void * memptr);
+
+int sys_semopen(semID id, uint64_t value);
+
+int64_t sys_close(uint64_t fd);
+
+PID sys_getpid();
+
+int sys_mapstdfds(PID pid, int stdin, int stdout);
+
+int sys_semclose(semID id);
+
+void sys_exit();
+
+PID sys_createprocess(void* program, unsigned int argc, char** argv);
+
+int64_t sys_chgpriority(PID pid, Priority priority);
+
+int sys_sempost(semID id);
+
+int sys_semwait(semID id);
+
+int64_t sys_pipe(uint64_t fd[2]);
+
+int64_t sys_kill(PID pid);
+
+int sys_setbackground(PID pid, Background background);
+
+int64_t sys_block(PID pid);
+
+int64_t sys_unblock(PID pid);
+
+void sys_listprocesses();
+
+void sys_listpipes();
+
+void sys_listsem();
+
 #endif

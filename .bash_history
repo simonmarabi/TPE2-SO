@@ -1,22 +1,3 @@
-ls
-make clean all
-cd ..
-make clean all
-ls
-make clean
-ls
-touch .bashrc
-vim .bashrc
-ls
-ls -a
-vim .bashrc
-vi .bashrc
-bash .bashsrc
-bash .bashrc
-ls
-ls -a
-rm .bashrc 
-ls
 ls -a
 clear
 s
@@ -497,4 +478,23 @@ cd .
 cd ..
 make all
 ls
+exit
+cd root
+make clean
+cd Toolchain
+make clean
+make all
+cd ..
+make all
+exit
+cd root
+ls
+make clean
+cd Toolchain/
+make clean
+make all
+cd ..
+make all
+ls
+clear
 exit

@@ -38,7 +38,7 @@ static FIFO fifoTable[MAX_FIFO];
 
 static pPipe pipeTable[MAX_FD];
 
-int64_t mkfifo(uint64_t id){
+int64_t mkFifo(uint64_t id){
 
     if(id == 0){
         return -1;

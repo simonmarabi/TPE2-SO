@@ -12,6 +12,11 @@
         "pipe.h": "c",
         "memory_manager.h": "c",
         "stdlib.h": "c",
-        "spinlock.h": "c"
+        "spinlock.h": "c",
+        "syscalls.h": "c",
+        "commands.h": "c",
+        "stringutil.h": "c",
+        "string.h": "c",
+        "speaker.h": "c"
     }
 }

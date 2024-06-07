@@ -8,6 +8,11 @@
 #include <speaker.h>
 #include <interrupts.h>
 #include <memory_manager.h>
+#include <pipe.h>
+#include <semaphores.h>
+#include <processManagement.h>
+
+#define SEM_OFFSET 10000
 
 extern uint64_t info[17];
 extern uint8_t screenshot;
@@ -104,6 +109,113 @@ static void sys_free_handler(void *memptr){
     free(memptr);
 }
 
+void sys_exit_handler() {
+    terminateProcess(getPID());
+}
+
+PID sys_getPid_handler() {
+    return getPID();
+}
+
+int64_t sys_kill_handler(PID pid) {
+    return terminateProcess(pid);
+}
+
+int64_t sys_changePriority_handler(PID pid, Priority priority) {
+    return changePriority(pid, priority);
+}
+
+int64_t sys_blockProcess_handler(PID pid) {
+    return blockProcess(pid);
+}
+
+int64_t sys_unblockProcess_handler(PID pid) {
+    return unblockProcess(pid);
+}
+
+void sys_yield_handler(void) {
+    yield();
+}
+
+int sys_setBackground_handler(PID pid, Background background) {
+    return setBackground(pid, background);
+}
+
+int64_t sys_openPipe_handler(uint64_t fd[2]) {
+    int result = openPipe(fd);
+    if (result >= 0) {
+        addFd(fd[0]);
+        addFd(fd[1]);
+    }
+    return result;
+}
+
+int64_t sys_close_handler(uint64_t fd) {
+    fd = fdLocalToGlobal(fd);
+    int result = closeFd(fd);
+    if (result >= 0)
+        removeFd(fd);
+    return result;
+}
+
+int64_t sys_mkFifo_handler(uint64_t id) {
+    return mkFifo(id);
+}
+
+int64_t sys_openFifo_handler(uint64_t id, fdType type) {
+    int64_t fd = openFifo(id, type);
+    if (fd >= 0) addFd(fd);
+    return fd;
+}
+
+int sys_mapStdFds_handler(PID pid, int stdin, int stdout) {
+    return mapStdFds(pid, stdin, stdout);
+}
+
+int64_t sys_rmFifo_handler(uint64_t id) {
+    return rmFifo(id);
+}
+
+void sys_listPipes_handler() {
+    listPipes();
+}
+
+int sys_semOpen_handler(semaphoreID id, uint64_t value) {
+    id += SEM_OFFSET;
+    if (id + SEM_OFFSET < id) return -1;
+    return semaphoreOpen(id, value);
+}
+
+int sys_semWait_handler(semaphoreID id) {
+    id += SEM_OFFSET;
+    if (id + SEM_OFFSET < id) return -1;
+    return semaphoreWait(id);
+}
+
+int sys_semPost_handler(semaphoreID id) {
+    id += SEM_OFFSET;
+    if (id + SEM_OFFSET < id) return -1;
+    return semaphorePost(id);
+}
+
+int sys_semClose_handler(semaphoreID id) {
+    id += SEM_OFFSET;
+    if (id + SEM_OFFSET < id) return -1;
+    return semaphoreClose(id);
+}
+
+void sys_listProcess_handler() {
+    listProcesses();
+}
+
+void sys_listSemaphore_handler() {
+    semaphorePrintAll();
+}
+
+PID sys_createprocess_handler(void* arg0, unsigned int arg1, char** arg2) {
+    return processCreate((void*) arg0, (unsigned int)arg1, (char**)arg2);
+}
+
 // Vector de punteros a funciones de llamada al sistema
 static syscallT syscalls[]  = {
     (syscallT) sys_read_handler, 
@@ -119,7 +231,29 @@ static syscallT syscalls[]  = {
     (syscallT) sys_beeper_handler,
     (syscallT) sys_memstate_handler,
     (syscallT) sys_alloc_handler,
-    (syscallT) sys_free_handler
+    (syscallT) sys_free_handler,
+    (syscallT) sys_exit_handler,
+    (syscallT) sys_getPid_handler,
+    (syscallT) sys_kill_handler,
+    (syscallT) sys_changePriority_handler,
+    (syscallT) sys_blockProcess_handler,
+    (syscallT) sys_unblockProcess_handler,
+    (syscallT) sys_yield_handler,
+    (syscallT) sys_openPipe_handler,
+    (syscallT) sys_close_handler,
+    (syscallT) sys_mkFifo_handler,
+    (syscallT) sys_openFifo_handler,
+    (syscallT) sys_setBackground_handler,
+    (syscallT) sys_mapStdFds_handler,
+    (syscallT) sys_rmFifo_handler,
+    (syscallT) sys_listPipes_handler,
+    (syscallT) sys_listProcess_handler,
+    (syscallT) sys_semOpen_handler,
+    (syscallT) sys_semWait_handler,
+    (syscallT) sys_semPost_handler,
+    (syscallT) sys_semClose_handler,
+    (syscallT) sys_listSemaphore_handler,
+    (syscallT) sys_createprocess_handler
 };
 
 // Función para despachar llamadas al sistema
