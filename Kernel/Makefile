@@ -103,7 +103,7 @@ $(KERNEL): $(STATICLIBS) $(ALL_OBJECTS)
 # Compilación de archivos C (primero creo el output path si no existe)
 $(OBJECTS_DIR)/%.o: %.c
 	mkdir -p $(@D)
-	$(GCC) $(GCCFLAGS) $(GCCDEFS) $(INCLUDES) -c $< -o $@
+	$(GCC) $(GCCFLAGS) $(GCCDEFS) $(INCLUDES) -fno-pic -c $< -o $@
 
 # Ensamblado de archivos ASM (primero creo el output path si no existe)
 $(OBJECTS_DIR)/%.o : %.asm
