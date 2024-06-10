@@ -8,25 +8,22 @@
 #include <naiveGraphicsConsole.h>
 
 
-typedef int semID;
+typedef int semaphoreID;
 
-typedef struct processNode{
-
+typedef struct processNode
+{
     PID pid;
     struct processNode * next;
-
 } processNode;
-
-typedef struct processQueue{
-
+typedef struct processQueue
+{
     processNode * first;
     processNode * last;
-
 }processQueue;
 
-typedef struct semaphore{
-    
-    semID id;
+typedef struct semaphore
+{
+    semaphoreID id;
     uint64_t value;
     spinlock lock;
     processQueue activeQueue;
@@ -36,10 +33,10 @@ typedef struct semaphore{
 }semaphore;
 
 
-int semOpen(semID id,uint64_t value);
-int semWait(semID id);
-int semPost(semID id);
-int semClose(semID id);
-void semPrintAll();
-void semPrintPIDs(semID id);
-int deleteSemaphore(semID id);
+int semaphoreOpen(semaphoreID id,uint64_t value);
+int semaphoreWait(semaphoreID id);
+int semaphorePost(semaphoreID id);
+int semaphoreClose(semaphoreID id);
+void semaphorePrintAll();
+void semaphorePrintPIDs(semaphoreID id);
+int deleteSemaphore(semaphoreID id);
