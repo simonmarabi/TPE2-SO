@@ -45,7 +45,8 @@ void bufferAction(char * buffer, uint64_t length){
 		
 		c = do_getChar();
 		// Si es enter entonces termina el string y sale 
-		if (c == '\n'){
+		if (c == '\n' || c == '\0'){
+			printf("\nENTER\n");
 			buffer[i] = '\0';
 			do_putChar(c);
 			foundEnter = 1; 
@@ -65,6 +66,7 @@ void bufferAction(char * buffer, uint64_t length){
 			}    
 		}
 	}
+	sys_clear_screen(0x000000);
 }
 
 // Función para obtener el formato de la hora

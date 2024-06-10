@@ -4,7 +4,7 @@
 #include <commands.h>
 #include <syscalls.h>
 
-#define NULL ((void *)0)
+#define NULL 0
 
 #define MAX_CMD_LEN 1024
 
@@ -20,7 +20,6 @@ static void setShellBackground(){
 
 static const Command parseCommand(int argc, const char ** argv){
     for(int i = 0; i < CMD_COUNT; i++){
-
         if(_strcmp(argv[0], cmds[i].name) != 0) continue;
 
         Command c = cmds[i];
@@ -30,7 +29,6 @@ static const Command parseCommand(int argc, const char ** argv){
 
     Command c = {NULL, NULL, 0};
     return c;
-
 }
 
 static uint8_t split(char * input, char * buf[], uint8_t maxCount){
@@ -52,7 +50,7 @@ static uint8_t split(char * input, char * buf[], uint8_t maxCount){
 
 int readInput(char *outputBuffer)
 {
-    printf(">");
+    printf(">$ ");
     int len = 0;
     while((len = sys_read(0,outputBuffer,MAX_CMD_LEN))<=0);
     outputBuffer[len-1] = 0;
@@ -61,6 +59,7 @@ int readInput(char *outputBuffer)
 
 int shellProcessWrapper(int argc, char **argv)
 {
+
     sys_semopen(START_PROC_SEM,0);
     sys_semwait(START_PROC_SEM);
     
@@ -71,6 +70,7 @@ int shellProcessWrapper(int argc, char **argv)
     strToIntBase(argv[argc-WRAPPER_ARGS], _strlen(argv[argc-WRAPPER_ARGS]), 10, (int*)&cmdInt, 1);
     
     CmdHandler cmd = (CmdHandler)cmdInt;
+
     int unusedPipeEnd;
     strToIntBase(argv[argc-WRAPPER_ARGS+2], _strlen(argv[argc-WRAPPER_ARGS+2]), 10, &unusedPipeEnd, 0);
 
@@ -79,8 +79,7 @@ int shellProcessWrapper(int argc, char **argv)
         sys_close(unusedPipeEnd);
     }
     PID pid = sys_getpid();
-
-    int retcode = cmd(argc-WRAPPER_ARGS,(char (*)[256]) argv);
+    int retcode = cmd(argc-WRAPPER_ARGS, (const char**) argv);
     sys_mapstdfds(pid,0,1);
 
     sys_semclose(START_PROC_SEM);
@@ -105,20 +104,23 @@ int checkPipeCommand(int * argc0, char ** argv0, char ** argv1){
     return 0;
 }
 
-void runCommand(Command cmd, int argc, char** argv){
+void runCommand(Command cmd, int argc, char** argv)
+{
     char handlerStr[24];
     uintToBase((uint64_t)cmd.handler, handlerStr, 10);
 
     argv[argc] = handlerStr;
     argv[argc+2] = "-1";
 
-    if(cmd.isBackground){
+    if(cmd.isBackground)
+    {
         argv[argc+1] = "1";
 
         PID pid = sys_createprocess(&shellProcessWrapper, argc+ WRAPPER_ARGS, argv);
         sys_chgpriority(pid, 1);
         sys_sempost(START_PROC_SEM); 
-     } else {
+    }
+    else {
         argv[argc+1] = "0";
         PID pid = sys_createprocess(&shellProcessWrapper, argc+WRAPPER_ARGS, argv);
         setShellBackground();
@@ -139,7 +141,7 @@ void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** a
 
     char pipeOutStr[24]; char pipeInStr[24];
     uintToBase(pipe[1], pipeOutStr, 10);
-    uintToBase(pipe[1], pipeInStr, 10);
+    uintToBase(pipe[0], pipeInStr, 10);
 
     argv0[argc0] = handler0Str;
     argv1[argc1] = handler1Str;
@@ -157,7 +159,7 @@ void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** a
     }
 
     PID pid0 = sys_createprocess(&shellProcessWrapper, argc0+WRAPPER_ARGS, argv0);
-    PID pid1 = sys_createprocess(&shellProcessWrapper, argc0+WRAPPER_ARGS, argv1);
+    PID pid1 = sys_createprocess(&shellProcessWrapper, argc1+WRAPPER_ARGS, argv1);
     sys_mapstdfds(pid0, STDIN, pipe[1]);
     sys_mapstdfds(pid1, pipe[0],STDOUT);
     sys_close(pipe[0]);
@@ -181,21 +183,23 @@ void runShell(){
     sys_semopen (START_PROC_SEM, 0);
     shellPid = sys_getpid();
     
-    while(1){
+    while(1)
+    {
         char input[MAX_CMD_LEN];
-
+        
         if(readInput(input) < 0)
-            continue;
+			continue;
+
         if(_strcmp(input, "") == 0)
             continue;
+            
         char* argv0[64];
-        int totalArgc = split(input,argv0,64);
-
+        int totalArgc = split(input, argv0, 64);
         int argc0 = totalArgc;
 
         char* argv1[64];
         int pipeCommand = checkPipeCommand(&argc0, argv0, argv1);
-
+        
         if(pipeCommand){
             int argc1 = totalArgc - argc0 - 1;
             Command cmd0 = parseCommand(argc0, (const char**)argv0);
@@ -209,13 +213,15 @@ void runShell(){
             runPipedCommands(cmd0, cmd1, argc0, argc1, argv0, argv1);
             continue;
         }
-        Command cmd = parseCommand(totalArgc,(const char**)argv0);
-        if(cmd.handler == 0) {
+        Command cmd = parseCommand(totalArgc, (const char**)argv0);
+        if(cmd.handler == NULL) {
             printf("Unknown command: %s\n", argv0[0]);
             continue;
         }
         runCommand(cmd, totalArgc, argv0);
+        
     }
 
     sys_semclose(START_PROC_SEM);
+    
 }

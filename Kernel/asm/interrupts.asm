@@ -22,7 +22,7 @@ GLOBAL _int20
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN syscallDispatcher
-EXTERN keyboard_handler
+EXTERN scheduler
 
 GLOBAL info
 GLOBAL screenshot
@@ -100,6 +100,7 @@ SECTION .text
 %endmacro
 
 %macro irqHandlerMaster 1
+	cli
 	pushState
 
 	mov rdi, %1 ; pasaje de parametro
@@ -110,6 +111,7 @@ SECTION .text
 	out 20h, al
 
 	popState
+	sti
 	iretq
 %endmacro
 
@@ -186,52 +188,25 @@ picSlaveMask:
     retn
 
 ;8254 Timer (Timer Tick)
-_irq00Handler: irqHandlerMaster 0
+_irq00Handler:
+pushState
 
-;Keyboard
-_irq01Handler:
-	pushState
- 	mov rax, 0
-    in al, 0x60
-	cmp al, 0x1D ; si la tecla es un ctrl
-	jne .continue
-	popState
-	pushState
-.saveRegs:
-	;Guardo: rip, rax, rbx, rcx, rdx, rsi, rdi, rbp, rsp, r8, r9, r10, r11, r12, r13, r14, r15 
-	mov [info+(1*8)], rax	;rax
-	mov rax, [rsp+(15*8)]
-	mov [info], rax			;rip
-	mov [info+(2*8)], rbx
-	mov [info+(3*8)], rcx
-	mov [info+(4*8)], rdx
-	mov [info+(5*8)], rsi
-	mov [info+(6*8)], rdi
-	mov [info+(7*8)], rbp
-	mov [info+(8*8)], rsp
-	mov [info+(9*8)], r8
-	mov [info+(10*8)], r9
-	mov [info+(11*8)], r10
-	mov [info+(12*8)], r11
-	mov [info+(13*8)], r12
-	mov [info+(14*8)], r13
-	mov [info+(15*8)], r14
-	mov [info+(16*8)], r15
-	mov byte[screenshot], 1
-	jmp .end
+	mov rdi, 0 ; pasaje de parametro
+	call irqDispatcher
 
-.continue:
-	cmp al, 0x9D	; si la tecla es un ctrl release
-	je .end
+	mov rdi, rsp
+	call scheduler
+	mov rsp, rax
 
-	mov rdi, rax
-	call keyboard_handler
-.end:
+	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
 
 	popState
 	iretq
+
+;Keyboard
+_irq01Handler: irqHandlerMaster 1
 	
 ;Cascade pic never called
 _irq02Handler: irqHandlerMaster 2

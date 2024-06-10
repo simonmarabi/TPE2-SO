@@ -19,7 +19,9 @@ void forkfd(int fd[]){
     }
 }
 
-int schedulerAddProcess(PCB pcb){
+int schedulerAddProcess(PCB pcb)
+{
+
     if(pcb.pid == 0){
         haltRsp = pcb.rsp;
         return 0;
@@ -30,10 +32,12 @@ int schedulerAddProcess(PCB pcb){
         ngc_print("NO MORE MEMORY TO CREATE PROCESS");
         return -1;
     }
-    
+
+
     newReady -> pcb = pcb;
     newReady -> priorityCounter = pcb.priority;
-    
+
+
     if(readyList.counter == 0){
         newReady -> next = newReady;
         newReady -> prev = newReady;
@@ -184,14 +188,18 @@ void removeBlocked(ProcessNode * blocked){
         blockedList.first -> prev = blocked;
         blockedList.first = blocked;
     }
-
-    return;
 }
 
 int64_t blockProcess(PID pid){
     if(readyList.current -> pcb.pid == pid){
         readyList.current -> pcb.state = BLOCKED;
         _int20();
+        return 0;
+    }
+    ProcessNode * process = searchReadyNode(pid);
+    if (process) {
+        process->pcb.state = BLOCKED;
+        removeBlocked(process);
         return 0;
     }
     return -1;

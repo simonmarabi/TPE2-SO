@@ -8,14 +8,14 @@
 #include <string.h>
 
 // Función help (sin parámetros)
-int help(int argc, char params[MAX_PARAMETERS][LENGTH_PARAMETERS])
+int help(int argc, const char* argv[])
 {
 	if(argc!=0){
 		printf("Be careful, help does not take any parameters\n");
 	}
 	// se corre el comando de todas formas
 	printf("All Commands\n");
-	for (int i=0; i <= REGISTERS;i++)
+	for (int i=0; i <= CMD_COUNT;i++)
 	{
 		printf("%s\n",cmds[i].name);
 	}
@@ -36,7 +36,7 @@ int help(int argc, char params[MAX_PARAMETERS][LENGTH_PARAMETERS])
 }
 
 // Función para verificar la excepción de división por cero (sin parámetros)
-int divideByZero(int argc, char  params[][LENGTH_PARAMETERS]){
+int divideByZero(int argc, const char* argv[]){
 	if(argc!=0){
 		printf("\tTry divideByZero without parameters\n");
 		return -1;
@@ -45,10 +45,8 @@ int divideByZero(int argc, char  params[][LENGTH_PARAMETERS]){
 	return 0;
 }
 
-
-
 // Función para verificar la excepción de código de operación inválido (sin parámetros)
-int invalidOPCode(int argc, char  params[][LENGTH_PARAMETERS]){
+int invalidOPCode(int argc, const char* argv[]){
 	if(argc!=0){
 		printf("\tTry invalidopcode without parameters\n");
 		return -1;
@@ -58,7 +56,7 @@ int invalidOPCode(int argc, char  params[][LENGTH_PARAMETERS]){
 }
 
 // Función para mostrar información de registros (sin parámetros)
-int inforeg(int argc, char params[][LENGTH_PARAMETERS]){
+int inforeg(int argc, const char* argv[]){
 	if(argc!=0){
 		printf("\tTry inforeg without parameters\n");
 		return -1;
@@ -68,17 +66,17 @@ int inforeg(int argc, char params[][LENGTH_PARAMETERS]){
 }
 
 // Función para cambiar el tamaño de fuente (1 parámetro: setting)
-int changeFontSize(int argc, char params[][LENGTH_PARAMETERS]){
+int changeFontSize(int argc, const char* argv[]){
 	if(argc != 1){
 		printf("\tTry change font size with 1 parameter (size)\n");
 		return -1;
 	}
-	if (_strlen(params[0]) > 1){
+	if (_strlen(argv[0]) > 1){
 		printf("\tTry with 1, 2 or 3\n");
 		return -1;
 	}
-	if (params[0][0] == '1' || params[0][0] == '2' || params[0][0] == '3' ){
-		do_changeFontSize(params[0][0]-'0');
+	if (argv[0][0] == '1' || argv[0][0] == '2' || argv[0][0] == '3' ){
+		do_changeFontSize(argv[0][0]-'0');
 		return -1;
 	}
 	else{
@@ -89,7 +87,7 @@ int changeFontSize(int argc, char params[][LENGTH_PARAMETERS]){
 }
 
 // Función para mostrar la hora actual del sistema (sin parámetros)
-int time(int argc, char params[][LENGTH_PARAMETERS]){
+int time(int argc, const char* argv[]){
 	if(argc!=0){
 		printf("\tTry time without parameters\n");
 		return -1;
@@ -119,7 +117,7 @@ int loop(){
 	}
 }
 
-int kill(int argc, char argv[][LENGTH_PARAMETERS]){
+int kill(int argc, const char* argv[]){
 	
 	if (argc <2)
 	{
@@ -142,7 +140,7 @@ int kill(int argc, char argv[][LENGTH_PARAMETERS]){
 	return 0;
 }
 
-int nice(int argc, char argv[][LENGTH_PARAMETERS]){
+int nice(int argc, const char* argv[]){
 	
 	if (argc < 2)
 	{
@@ -173,7 +171,7 @@ int nice(int argc, char argv[][LENGTH_PARAMETERS]){
 	return 0;
 }
 
-int block(int argc, char argv[][LENGTH_PARAMETERS]){
+int block(int argc, const char* argv[]){
 
 	if (argc < 2)
 	{
@@ -221,19 +219,19 @@ int wc(){
 }
 
 // Función para iniciar el juego Snakes (sin parámetros)
-int snakes(int argc, char argv[][LENGTH_PARAMETERS]){
+int snakes(int argc, const char* argv[]){
 	play_snakes();
 	return 0;
 }
 
 // Función para limpiar la pantalla (sin parámetros)
-int clearScreen(int argc, char params[][LENGTH_PARAMETERS]) {
+int clearScreen(int argc, const char* argv[]) {
 	do_clearScreen(BLACK);
 	return 0;
 }
 
 // Función para obtener el estado de la memoria (sin parámetros)
-int printMem(int argc, char params[][LENGTH_PARAMETERS]){
+int printMem(int argc, const char* argv[]){
 	do_printMem();
 	return 0;
 }

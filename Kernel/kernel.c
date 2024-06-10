@@ -75,25 +75,17 @@ int main()
 	#endif
 
 	char* argv[]= {0};
-	ngc_print("TEST 1\n");
 
 	PID pid = processCreate(&haltProc,0,argv);
 	char * argvshell[] = {"shell"};
-	ngc_print("TEST 2\n");
+
 
 	pid = processCreate(sampleCodeModuleAddress,1,argvshell);
-	ngc_print("TEST 3\n");
 	changePriority(pid,HIGH);
-	ngc_print("TEST 4\n");
 	setBackground(pid,FOREGROUND);
-	ngc_print("TEST 5\n");
 	//carga
 	load_idt();
-	ngc_print("TEST 6\n");
-	ngc_print("Waiting for Processes to Run...\n");
-	ngc_print("TEST 7\n");
-
-
+	ngc_paint_screen(0x000000);
 	((EntryPoint)sampleCodeModuleAddress)();
 	
 	while(1) _hlt();

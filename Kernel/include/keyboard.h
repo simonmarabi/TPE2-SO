@@ -1,13 +1,124 @@
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#pragma once
+
 #include <stdint.h>
 
-extern uint64_t getKey();
+typedef enum Key Key;
 
-extern uint64_t tKey();
+uint8_t readKeyRaw();
+uint8_t readKeyPoll();
+uint8_t readAscii();
+uint8_t isKeyPressed(Key key);
+Key readKey();
+void handleKeyboardInterrupt();
+void waitKey();
 
-void keyboard_handler(uint64_t teclahex);
+//Enum con todas las teclas
+enum Key {
+    KEY_ESC = 1,
+    KEY_F1,
+    KEY_F2,
+    KEY_F3,
+    KEY_F4,
+    KEY_F5,
+    KEY_F6,
+    KEY_F7,
+    KEY_F8,
+    KEY_F9,
+    KEY_F10,
+    KEY_F11,
+    KEY_F12,
+    KEY_PRINT_SCREEN,
+    KEY_SCROLL_LOCK,
+    KEY_PAUSE,
+    KEY_VERTICAL_LINE,
+    KEY_1,
+    KEY_2,
+    KEY_3,
+    KEY_4,
+    KEY_5,
+    KEY_6,
+    KEY_7,
+    KEY_8,
+    KEY_9,
+    KEY_0,
+    KEY_APOSTROPHE,
+    KEY_OPEN_QUESTION,
+    KEY_BACKSPACE,
+    KEY_TAB,
+    KEY_Q,
+    KEY_W,
+    KEY_E,
+    KEY_R,
+    KEY_T,
+    KEY_Y,
+    KEY_U,
+    KEY_I,
+    KEY_O,
+    KEY_P,
+    KEY_ACUTE,
+    KEY_PLUS,
+    KEY_ENTER,
+    KEY_LOCK_CAPS,
+    KEY_A,
+    KEY_S,
+    KEY_D,
+    KEY_F,
+    KEY_G,
+    KEY_H,
+    KEY_J,
+    KEY_K,
+    KEY_L,
+    KEY_TILDED_N,
+    KEY_LBRACE,
+    KEY_RBRACE,
+    KEY_LSHIFT,
+    KEY_LESS_THAN,
+    KEY_Z,
+    KEY_X,
+    KEY_C,
+    KEY_V,
+    KEY_B,
+    KEY_N,
+    KEY_M,
+    KEY_COMMA,
+    KEY_PERIOD,
+    KEY_DASH,
+    KEY_RSHIFT,
+    KEY_LCTRL,
+    KEY_SUPER,
+    KEY_ALT,
+    KEY_SPACE,
+    KEY_ALTGR,
+    KEY_OPTION,
+    KEY_RCTRL,
 
-char getFirstChar();
+    KEY_INSERT,
+    KEY_HOME,
+    KEY_PAGE_UP,
+    KEY_DELETE,
+    KEY_END,
+    KEY_PAGE_DOWN,
 
-#endif
+    KEY_ARROW_UP,
+    KEY_ARROW_LEFT,
+    KEY_ARROW_DOWN,
+    KEY_ARROW_RIGHT,
+
+    KEY_NUM_LOCK,
+    KEY_NUM_FORWARD_SLASH,
+    KEY_NUM_ASTERISC,
+    KEY_NUM_DASH,
+    KEY_NUM_7,
+    KEY_NUM_8,
+    KEY_NUM_9,
+    KEY_NUM_4,
+    KEY_NUM_5,
+    KEY_NUM_6,
+    KEY_NUM_1,
+    KEY_NUM_2,
+    KEY_NUM_3,
+    KEY_NUM_0,
+    KEY_NUM_PERIOD,
+    KEY_NUM_PLUS,
+    KEY_NUM_ENTER
+};

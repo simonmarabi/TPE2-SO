@@ -38,7 +38,7 @@
 // 			// parametros enviados junto al comando
 // 			char parameters[MAX_PARAMETERS][LENGTH_PARAMETERS] = {{0}};
 
-// 			bufferAction(buff_command, BUFFER_LENGTH); //sys_read de todo
+////			bufferAction(buff_command, BUFFER_LENGTH); //sys_read de todo
 // 			int size = parseBuffer(command, parameters, buff_command);
 // 			int idx = findIdxCommand(command);
 // 			if(idx >= 0 ){

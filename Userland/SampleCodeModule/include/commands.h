@@ -12,10 +12,10 @@
 //#include <tests.h>
 #include <syscall.h>
 
-#define CMD_COUNT 29
+#define CMD_COUNT 17
 
 
-typedef int (*CmdHandler)(int argc, char params[][LENGTH_PARAMETERS]);
+typedef int (*CmdHandler)(int argc, const char* argv[]);
 
 typedef struct {
 	const char* name;
@@ -23,33 +23,33 @@ typedef struct {
 	uint8_t isBackground;
 } Command;
 
-int help(int argc, char params[MAX_PARAMETERS][LENGTH_PARAMETERS]);
+int help(int argc, const char* argv[]);
 
-int invalidOPCode(int argc, char params[][LENGTH_PARAMETERS]);
+int invalidOPCode(int argc, const char* argv[]);
 
-int divideByZero(int argc, char params[][LENGTH_PARAMETERS]);
+int divideByZero(int argc, const char* argv[]);
 
-int inforeg(int argc, char params[][LENGTH_PARAMETERS]);
+int inforeg(int argc, const char* argv[]);
 
-int time(int argc, char params[][LENGTH_PARAMETERS]);
+int time(int argc, const char* argv[]);
 
-int changeFontSize(int argc, char params[][LENGTH_PARAMETERS]);
+int changeFontSize(int argc, const char* argv[]);
 
-int snakes(int argc, char params[][LENGTH_PARAMETERS]);
+int snakes(int argc, const char* argv[]);
 
-int clearScreen(int argc, char params[][LENGTH_PARAMETERS]);
+int clearScreen(int argc, const char* argv[]);
 
-int printMem(int argc, char params[][LENGTH_PARAMETERS]);
+int printMem(int argc, const char* argv[]);
 
 //NEW
 
-int kill(int argc, char params[][LENGTH_PARAMETERS]);
+int kill(int argc, const char* argv[]);
 
 int loop();
 
-int nice(int argc, char params[][LENGTH_PARAMETERS]);
+int nice(int argc, const char* argv[]);
 
-int block(int argc, char argv[][LENGTH_PARAMETERS]);
+int block(int argc, const char* argv[]);
 
 int cat();
 

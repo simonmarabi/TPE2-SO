@@ -20,7 +20,7 @@ extern uint8_t screenshot;
 typedef int64_t (*syscallT) (uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 
 // Función para manejar la escritura en el sistema
-static void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
+void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
     if (fd == STDOUT) {
         for (uint64_t i = 0; i < bytes; i++){
             ngc_printChar(((char*)buffer)[i]);
@@ -29,15 +29,51 @@ static void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
 }
 
 // Función para manejar la lectura desde el sistema
-static int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
-    if (fd != STDIN && fd != KBDIN) return -1;
-    int64_t i = 0;
-    char c;
-    while(i < bytes && (c = getFirstChar()) != 0xFF) {
-        buffer[i] = c;
-        i++;
+int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
+    fd = fdLocalToGlobal(fd);
+
+    if(fd == 0) {
+        if(getBackground()) {
+            blockProcess(getPID());
+            return 0;
+        }
+
+        int i;
+        for(i = 0; i < bytes; i++) {
+            char c = readAscii();
+
+            if(c == '\t') {
+                i--;
+                continue;
+            }
+
+            if(c == -1) return -1;
+
+            //Backspace
+            if(c == 8) {
+                //Si llego a la pos minima no sigo borrando
+                if(i <= 0) {
+                    i--;
+                    continue;
+                }
+                i-=2;
+            }
+            else buffer[i] = c; //Escribo el caracter al buffer
+        
+            //Imprimo en pantalla el caracter
+            ngc_printChar(c);
+
+            //Si recibo un enter dejo de leer del teclado y devuelvo
+            if(c == '\n') {
+                i++;
+                break;
+            }
+        }
+    
+        return i; //Devuelvo la cantidad de caracteres que leí
     }
-    return i;
+
+    return readFd(fd, buffer, bytes);
 }
 
 // Función para obtener la hora actual del sistema
@@ -180,28 +216,28 @@ void sys_listPipes_handler() {
     listPipes();
 }
 
-int sys_semOpen_handler(semaphoreID id, uint64_t value) {
+int sys_semOpen_handler(semID id, uint64_t value) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphoreOpen(id, value);
+    return semOpen(id, value);
 }
 
-int sys_semWait_handler(semaphoreID id) {
+int sys_semWait_handler(semID id) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphoreWait(id);
+    return semWait(id);
 }
 
-int sys_semPost_handler(semaphoreID id) {
+int sys_semPost_handler(semID id) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphorePost(id);
+    return semPost(id);
 }
 
-int sys_semClose_handler(semaphoreID id) {
+int sys_semClose_handler(semID id) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphoreClose(id);
+    return semClose(id);
 }
 
 void sys_listProcess_handler() {
@@ -209,7 +245,7 @@ void sys_listProcess_handler() {
 }
 
 void sys_listSemaphore_handler() {
-    semaphorePrintAll();
+    semPrintAll();
 }
 
 PID sys_createprocess_handler(void* arg0, unsigned int arg1, char** arg2) {
