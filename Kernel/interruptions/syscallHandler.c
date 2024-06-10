@@ -180,28 +180,28 @@ void sys_listPipes_handler() {
     listPipes();
 }
 
-int sys_semOpen_handler(semaphoreID id, uint64_t value) {
+int sys_semOpen_handler(semID id, uint64_t value) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphoreOpen(id, value);
+    return semOpen(id, value);
 }
 
-int sys_semWait_handler(semaphoreID id) {
+int sys_semWait_handler(semID id) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphoreWait(id);
+    return semWait(id);
 }
 
-int sys_semPost_handler(semaphoreID id) {
+int sys_semPost_handler(semID id) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphorePost(id);
+    return semPost(id);
 }
 
-int sys_semClose_handler(semaphoreID id) {
+int sys_semClose_handler(semID id) {
     id += SEM_OFFSET;
     if (id + SEM_OFFSET < id) return -1;
-    return semaphoreClose(id);
+    return semClose(id);
 }
 
 void sys_listProcess_handler() {
@@ -209,7 +209,7 @@ void sys_listProcess_handler() {
 }
 
 void sys_listSemaphore_handler() {
-    semaphorePrintAll();
+    semPrintAll();
 }
 
 PID sys_createprocess_handler(void* arg0, unsigned int arg1, char** arg2) {

@@ -4,7 +4,7 @@
 #include <commands.h>
 #include <syscalls.h>
 
-#define NULL ((void *)0)
+#define NULL 0
 
 #define MAX_CMD_LEN 1024
 
@@ -20,7 +20,7 @@ static void setShellBackground(){
 
 static const Command parseCommand(int argc, const char ** argv){
     for(int i = 0; i < CMD_COUNT; i++){
-
+        printf("Checking command: %s against %s\n", argv[0], cmds[i].name);  // Debug print
         if(_strcmp(argv[0], cmds[i].name) != 0) continue;
 
         Command c = cmds[i];
@@ -30,7 +30,6 @@ static const Command parseCommand(int argc, const char ** argv){
 
     Command c = {NULL, NULL, 0};
     return c;
-
 }
 
 static uint8_t split(char * input, char * buf[], uint8_t maxCount){
@@ -50,9 +49,43 @@ static uint8_t split(char * input, char * buf[], uint8_t maxCount){
 
 }
 
+// static uint8_t split(char * input, char * buf[], uint8_t maxCount) {
+//     char c;
+//     int word = 0;
+//     int inWord = 0;
+//     buf[word] = input;
+
+//     while ((c = *input++) != 0 && word < maxCount - 1) {
+//         if (c == ' ' || c == '\t') {
+//             if (inWord) {
+//                 *(input - 1) = 0;
+//                 buf[++word] = input;
+//                 inWord = 0;
+//             }
+//         } else {
+//             inWord = 1;
+//         }
+//     }
+
+//     if (inWord) {
+//         buf[++word] = NULL;  // Ensure the last element is NULL if there is a trailing word
+//     } else {
+//         buf[word] = NULL;  // Ensure the last element is NULL if there is no trailing word
+//     }
+
+//     // Debug print
+//     for (int i = 0; i < word; i++) {
+//         printf("Argument %d: %s\n", i, buf[i]);
+//     }
+
+//     return word;
+// }
+
+
+
 int readInput(char *outputBuffer)
 {
-    printf(">");
+    printf(">$ ");
     int len = 0;
     while((len = sys_read(0,outputBuffer,MAX_CMD_LEN))<=0);
     outputBuffer[len-1] = 0;
@@ -139,7 +172,7 @@ void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** a
 
     char pipeOutStr[24]; char pipeInStr[24];
     uintToBase(pipe[1], pipeOutStr, 10);
-    uintToBase(pipe[1], pipeInStr, 10);
+    uintToBase(pipe[0], pipeInStr, 10);
 
     argv0[argc0] = handler0Str;
     argv1[argc1] = handler1Str;
@@ -157,7 +190,7 @@ void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** a
     }
 
     PID pid0 = sys_createprocess(&shellProcessWrapper, argc0+WRAPPER_ARGS, argv0);
-    PID pid1 = sys_createprocess(&shellProcessWrapper, argc0+WRAPPER_ARGS, argv1);
+    PID pid1 = sys_createprocess(&shellProcessWrapper, argc1+WRAPPER_ARGS, argv1);
     sys_mapstdfds(pid0, STDIN, pipe[1]);
     sys_mapstdfds(pid1, pipe[0],STDOUT);
     sys_close(pipe[0]);
@@ -189,7 +222,17 @@ void runShell(){
         if(_strcmp(input, "") == 0)
             continue;
         char* argv0[64];
-        int totalArgc = split(input,argv0,64);
+        int totalArgc = split(input, argv0, 64);
+
+        // Debug print
+        printf("Total arguments: %d\n", totalArgc);
+        for (int i = 0; i < totalArgc; i++) {
+            printf("Argument %d: %s\n", i, argv0[i]);
+        }
+
+        if (argv0[0] == NULL || _strcmp(argv0[0], "") == 0) {
+            continue;  // No command in input
+        }
 
         int argc0 = totalArgc;
 
@@ -209,8 +252,8 @@ void runShell(){
             runPipedCommands(cmd0, cmd1, argc0, argc1, argv0, argv1);
             continue;
         }
-        Command cmd = parseCommand(totalArgc,(const char**)argv0);
-        if(cmd.handler == 0) {
+        Command cmd = parseCommand(totalArgc, (const char**)argv0);
+        if(cmd.handler == NULL) {
             printf("Unknown command: %s\n", argv0[0]);
             continue;
         }

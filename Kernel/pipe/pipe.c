@@ -20,8 +20,8 @@ struct Pipe {
     int readPID;
     int writePID;
 
-    semaphoreID writequeue;
-    semaphoreID readqueue;
+    semID writequeue;
+    semID readqueue;
 
     int readfd;
     int writefd;
@@ -151,8 +151,8 @@ int64_t openPipe(uint64_t fd[2]){
     pipe->writequeue = semcounter++;
     pipe->readqueue = semcounter++;
 
-    semaphoreOpen(pipe->writequeue, 1);
-    semaphoreOpen(pipe->readqueue, 1);
+    semOpen(pipe->writequeue, 1);
+    semOpen(pipe->readqueue, 1);
 
     pipe->readfd = fd[0];
     pipe->writefd = fd[1];
@@ -191,13 +191,13 @@ int64_t readPipe(pPipe pipe, char* buf, uint64_t count){
     if(!pipe->readOpen)
         return -1;
     
-    semaphoreWait(pipe->readqueue);
+    semWait(pipe->readqueue);
 
     pipe->readPID = getPID();
     while (pipe->readIdx == pipe->writeIdx){
         if(!pipe->readPID){
             pipe->readPID = 0;
-            semaphorePost(pipe->readqueue);
+            semPost(pipe->readqueue);
             return 0;
         }
         blockProcess(pipe->readPID);
@@ -217,7 +217,7 @@ int64_t readPipe(pPipe pipe, char* buf, uint64_t count){
         unblockProcess(pipe->writePID);
     }
 
-    semaphorePost(pipe -> writePID);
+    semPost(pipe -> writePID);
     return i;
 }
 
@@ -225,14 +225,14 @@ int64_t writePipe(pPipe pipe, const char* buf, uint64_t count) {
     if (!pipe->writeOpen || !pipe->readOpen)
         return -1;
 
-    semaphoreWait(pipe->writequeue);
+    semWait(pipe->writequeue);
 
     for(int i = 0; i < count; i++) {
         pipe->writePID = getPID();
         while(pipe->writeIdx == pipe->readIdx + PIPE_BUFFER) {
             if(!pipe->readOpen) {
                 pipe->writePID = 0;
-                semaphorePost(pipe->writequeue);
+                semPost(pipe->writequeue);
                 return -1;
             }
             if (pipe->readPID) 
@@ -246,7 +246,7 @@ int64_t writePipe(pPipe pipe, const char* buf, uint64_t count) {
     if (pipe->readPID) 
         unblockProcess(pipe->readPID);
 
-    semaphorePost(pipe->writequeue);
+    semPost(pipe->writequeue);
     return count;
 }
 
@@ -291,10 +291,10 @@ void listPipes() {
             ngc_print(" | ");
 
             // print readqueue pids
-            semaphorePrintPIDs(pipeTable[i]->readqueue);
+            semPrintPIDs(pipeTable[i]->readqueue);
             ngc_print(" | ");
             // print writequeue pids
-            semaphorePrintPIDs(pipeTable[i]->writequeue);
+            semPrintPIDs(pipeTable[i]->writequeue);
 
             ngc_printNewline();
         }

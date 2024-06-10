@@ -1,13 +1,3 @@
-ls
-cd root
-ls
-./run.sh
-./run.sh
-./run.sh
-xhost +
-xhost +
-clear
-ls
 ./run.sh
 exit
 ls
@@ -492,6 +482,16 @@ make clean
 make all
 cd ..
 make all
+make clean
+cd Toolchain/
+make clean
+make all
+cd ..
+make all
+ls
+cd root
+ls
+clear
 make clean
 cd Toolchain/
 make clean

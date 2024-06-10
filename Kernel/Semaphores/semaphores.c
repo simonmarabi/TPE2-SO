@@ -1,102 +1,91 @@
 #include <semaphores.h>
 
-static semaphore * semaphoreList = NULL;
+// static semaphore * semaphoreList = NULL;
 
-static semaphore * searchSemaphore(semaphoreID searchedID)
-{
-    semaphore * iterator = semaphoreList;
-    
-    while (iterator != NULL)
-    {
-        if (iterator->id == searchedID)
-        {
+static semaphore * semList = NULL;
+
+static semaphore * searchSemaphore(semID searchID) {
+    semaphore * iterator = semList;
+    while (iterator != NULL) {
+        if (iterator->id == searchID)
             return iterator;
-        }
         iterator = iterator->next;
     }
-    return iterator;
+    return NULL;    
 }
 
-static void removeSemaphore (semaphoreID idToRemove)
-{
-    semaphore * iterator = semaphoreList;
-    if (iterator == NULL) return;
-    //Eliminamos el primero
-    if (iterator->id == idToRemove)
-    {
-        semaphoreList = iterator->next;
-        free(iterator);
+static void removeSemaphore(semID id) {
+    semaphore * it = semList;
+    if (it == NULL) 
+        return;
+    
+    if (it->id == id) {
+        semList = it->next;
+        free(it);
         return;
     }
-    while (iterator->next != NULL)
-    {
-        if (iterator->next->id == idToRemove)
-        {
-            semaphore * aux = iterator->next;
-            iterator->next = iterator->next->next;
+
+    while (it->next != NULL) {
+        if (it->next->id == id) {
+            semaphore * aux = it->next;
+            it->next = it->next->next;
             free(aux);
             return;
         }
-        iterator = iterator->next;
+        it = it->next;
     }
-    
 }
 
-static void addToProcessQueue(processQueue * queue, PID pid, int isActiveQueue)
-{
-    if (isActiveQueue)
-    {
-        processNode* iterator = queue->first;
-        while(iterator != NULL)
-        {
-            //No agrego dos veces al mismo
-            if (iterator->pid == pid) return;
-
-            iterator= iterator->next;
+static void addToProcessQueue(processQueue * queue, PID pid, int isActiveQueue) {
+    if (isActiveQueue) { // En la lista de activos veo que no haya repetidos, en la de bloqueados no es necesario
+        processNode * it = queue->first;
+        while (it != NULL) {
+            // No agrego dos veces al mismo
+            if (it->pid == pid)
+                return;
+            it = it->next;
         }
     }
-
+    
     processNode * toAdd = alloc(sizeof(processNode));
-    if (toAdd == NULL) return;
+    if (toAdd == NULL)
+        return; 
     toAdd->pid = pid;
     toAdd->next = NULL;
     if (queue->first == NULL)
         queue->first = toAdd;
-    else 
-        queue->last = toAdd;
+    else
+        queue->last->next = toAdd;
+
+    queue->last = toAdd;
 }
 
-static void removeFromQueue(processQueue * queue,PID pid)
-{
-    processNode * iterator = queue->first;
-    if (iterator == NULL) return;
-
-    if (iterator->pid == pid)
-    {
-        queue->first = iterator->next;
-        if (iterator->next == NULL)
+static void removeFromQueue(processQueue * queue, PID pid) {
+    processNode * it = queue->first;
+    if (it == NULL) 
+        return;
+    if (it->pid == pid) {
+        queue->first = it->next;
+        if (it->next == NULL)
             queue->last = NULL;
-        free(iterator);
+        free(it);
         return;
     }
-    while (iterator->next != NULL)
-    {
-        if (iterator->next->pid == pid)
-        {
-            processNode * aux = iterator->next;
-            iterator->next = iterator->next->next;
+
+    while (it->next != NULL) {
+        if (it->next->pid == pid) {
+            processNode * aux = it->next;
+            it->next = it->next->next;
             if (queue->last == aux)
-                queue->last = iterator;
+                queue->last = it;
             free(aux);
             return;
         }
-        iterator = iterator->next;
+        it = it->next;
     }
-    
 }
 
-static PID popBlockedQueue(processQueue * queue)
-{
+static PID popBlockedQueue(processQueue * queue) {
     if (queue->first == NULL)
         return -1;
     processNode * toRemove = queue->first;
@@ -108,33 +97,26 @@ static PID popBlockedQueue(processQueue * queue)
     return pid;
 }
 
-static void addSemaphore(semaphore * toAdd){
-    
-    semaphore * iterator = semaphoreList;
-    if (iterator == NULL)
-    {
-        semaphoreList = toAdd;
+static void addSemaphore(semaphore * toAdd) {
+    semaphore * it = semList;
+    if (it == NULL) {
+        semList = toAdd;
         return;
     }
-    while (iterator->next != NULL)
-    {
-        iterator = iterator->next;
-    }
-
-    iterator->next = toAdd;
+    while (it->next != NULL)
+        it = it->next;
+    it->next = toAdd;
 }
 
-int semaphoreOpen(semaphoreID id,uint64_t value)
-{
+int semOpen(semID id, uint64_t value) {
     semaphore * toAdd = searchSemaphore(id);
-    if (toAdd != NULL)
-    {
-        addToProcessQueue(&(toAdd->activeQueue), getPID() ,1);
+    if (toAdd != NULL) {
+        addToProcessQueue(&(toAdd->activeQueue), getPID(), 1);
         return 0;
     }
     toAdd = alloc(sizeof(semaphore));
-    if (toAdd ==  NULL)
-        return -1;
+    if (toAdd == NULL)
+        return -1; // TODO NULL-Check
     toAdd->id = id;
     toAdd->value = value;
     toAdd->blockedQueue.first = NULL;
@@ -142,101 +124,94 @@ int semaphoreOpen(semaphoreID id,uint64_t value)
     toAdd->activeQueue.first = NULL;
     toAdd->activeQueue.last = NULL;
     toAdd->next = NULL;
-    addToProcessQueue(&(toAdd->activeQueue),getPID(),1);
+    addToProcessQueue(&(toAdd->activeQueue), getPID(), 1);
     initLock(&toAdd->lock);
     addSemaphore(toAdd);
     return 1;
 }
 
-static void wakeup(processQueue *queue)
-{
+static void wakeup(processQueue * queue) {
     PID pid = popBlockedQueue(queue);
     if (pid < 0) return;
     unblockProcess(pid);
 }
 
-static void sleep(processQueue *queue)
-{
+static void sleep(processQueue * queue) {
     PID pid = getPID();
-    addToProcessQueue(queue,pid,0);
+    addToProcessQueue(queue, pid, 0);
     blockProcess(pid);
-
 }
 
-static int verifyPID(processQueue * activeQueue, PID pid)
-{
+static int verifyPID(processQueue * activeQueue, PID pid) {
     processNode * iterator = activeQueue->first;
-    while (iterator != NULL)
-    {
-        if (iterator->pid == pid) return 1;
-        
+    while (iterator != NULL) {
+        if (iterator->pid == pid) {
+            return 1;
+        }
         iterator = iterator->next;
     }
     return 0;
 }
 
-static void printStats(semaphore *sem)
-{
+static void printStats(semaphore * sem) {
     ngc_printInt(sem->id);
     ngc_print(" | ");
     ngc_printInt(sem->value);
     ngc_print(" | ");
-
-    processNode * iterator = sem->blockedQueue.first;
-    if (iterator == NULL)
-    {
+    processNode * it = sem->blockedQueue.first;
+    if (it == NULL) {
         ngc_print("-");
         ngc_printNewline();
-
         return;
     }
-    while(iterator != NULL)
+    while (it != NULL) 
     {
-        ngc_printInt(iterator->pid);
+        
+        ngc_printInt(it->pid);
         ngc_print(" ");
-        iterator = iterator->next;
+        it = it->next;
     }
     ngc_printNewline();
 }
 
-void semaphorePrintPIDs(semaphoreID id)
-{
-    semaphore * iterator = semaphoreList;
-    while (iterator != NULL)
-    {
-        if (iterator->id == id)
-        {
+void semPrintPIDs(semID id) {
+    semaphore * iterator = semList;
+    while (iterator != NULL) {
+        if (iterator->id == id) {
             processNode * it = iterator->blockedQueue.first;
-            if (it==NULL)
-            {
+            if (it == NULL) {
                 ngc_print("-");
                 return;
             }
-            while (it != NULL)
-            {
+            while (it != NULL) {
                 ngc_printInt(it->pid);
                 ngc_print(" ");
                 it = it->next;
             }
             return;
         }
-        iterator=iterator->next;
-        }
-        
+        iterator = iterator->next;
     }
+}
 
-int semaphoreWait(semaphoreID id)
-{
+void semPrintAll() {
+    ngc_print("SEMAPHORE ID | VALUE | BLOCKED PROCESSES");
+    semaphore * it = semList;
+    while (it != NULL) {
+        printStats(it);
+        it = it->next;
+    }
+}
+
+int semWait(semID id) {
     semaphore * sem = searchSemaphore(id);
     if (sem == NULL)
-    {
         return -1;
-    }
+    
     acquire(&(sem->lock));
     if (sem->value > 0)
         sem->value -= 1;
-    else
-    {
+    else {
         release(&(sem->lock));
         sleep(&(sem->blockedQueue));
         acquire(&(sem->lock));
@@ -244,12 +219,13 @@ int semaphoreWait(semaphoreID id)
     }
     release(&(sem->lock));
     return 0;
-    
 }
-int semaphorePost(semaphoreID id)
-{
+
+int semPost(semID id) {
     semaphore * sem = searchSemaphore(id);
-    if (sem == NULL) return -1;
+    if (sem == NULL)
+        return -1;
+    
     acquire(&(sem->lock));
     sem->value += 1;
     wakeup(&(sem->blockedQueue));
@@ -257,38 +233,26 @@ int semaphorePost(semaphoreID id)
     yield();
     return 0;
 }
-int semaphoreClose(semaphoreID id)
-{
+
+int semClose(semID id) {
     semaphore * sem = searchSemaphore(id);
-    if (sem == NULL) return -1;
+    if (sem == NULL)
+        return -1;
 
-    if (!verifyPID(&(sem->activeQueue),getPID())) return -2;
-
-    removeFromQueue(&(sem->activeQueue),getPID());
-    if (sem->activeQueue.first == NULL) removeSemaphore(sem->id);
-
+    if (!verifyPID(&(sem->activeQueue), getPID()))
+        return -2;
+    
+    removeFromQueue(&(sem->activeQueue), getPID());
+    if (sem->activeQueue.first == NULL)
+        removeSemaphore(sem->id);
     return 1;
 }
 
-void semaphorePrintAll()
-{
-    ngc_print("SEMAFORE ID | VALUE | BLOCKED PROCESSES\n");
-    semaphore * it = semaphoreList;
-    
-    while (it != NULL)
-    {
-        printStats(it);
-        it = it->next;
-    }
-    
-}
-
-int deleteSemaphore(semaphoreID id)
-{
+// only for kernel
+int deleteSemaphore(semID id) {
     semaphore * sem = searchSemaphore(id);
-    if(sem == NULL)
+    if (sem == NULL)
         return -1;
-    
     removeSemaphore(sem->id);
     return 1;
 }
