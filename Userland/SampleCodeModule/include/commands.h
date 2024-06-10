@@ -12,7 +12,7 @@
 //#include <tests.h>
 #include <syscall.h>
 
-#define CMD_COUNT 18
+#define CMD_COUNT 29
 
 
 typedef int (*CmdHandler)(int argc, char params[][LENGTH_PARAMETERS]);

@@ -199,21 +199,21 @@ sys_semwait:
     ret 
 
 sys_sempost:
-    mov rax, 0x20       
-    int 80h             
-    ret 
-
-sys_semclose:
     mov rax, 0x21       
     int 80h             
     ret 
 
-sys_listsem:
+sys_semclose:
     mov rax, 0x22       
     int 80h             
     ret 
 
-sys_createprocess:
+sys_listsem:
     mov rax, 0x23       
+    int 80h             
+    ret 
+
+sys_createprocess:
+    mov rax, 0x24       
     int 80h             
     ret 
