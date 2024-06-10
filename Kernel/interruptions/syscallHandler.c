@@ -30,14 +30,30 @@ static void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
 
 // Función para manejar la lectura desde el sistema
 static int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
-    if (fd != STDIN && fd != KBDIN) return -1;
-    int64_t i = 0;
-    char c;
-    while(i < bytes && (c = getFirstChar()) != 0xFF) {
+    fd = fdLocalToGlobal(fd);
+int64_t i = 0;
+char c;
+
+if (fd == 0) {  // Verifica si fd es stdin
+    if (getBackground()) {  // Verifica si el proceso está en segundo plano
+        blockProcess(getPID());  // Bloquea el proceso actual
+        return 0;
+    }
+
+    // Lee caracteres hasta encontrar '\n' o alcanzar el máximo de bytes
+    while (i < bytes) {
+        c = getFirstChar();
+        if (c == '\n') {
+            break;
+        }
         buffer[i] = c;
         i++;
     }
-    return i;
+    return i;  // Retorna el número de caracteres leídos
+}
+
+// Si fd no es stdin, lee desde el fd proporcionado
+return readFd(fd, buffer, bytes);
 }
 
 // Función para obtener la hora actual del sistema

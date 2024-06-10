@@ -31,6 +31,45 @@ static const Command parseCommand(int argc, const char ** argv){
     Command c = {NULL, NULL, 0};
     return c;
 }
+static int parseBuffer(char command[BUFFER_LENGTH], char parameters[MAX_PARAMETERS][LENGTH_PARAMETERS], char readbuf[BUFFER_LENGTH]) {
+ 	int i=0, j;
+ 	while(i < BUFFER_LENGTH && readbuf[i] == ' '){
+ 		i++;
+	}
+ 	for(j = 0; i < BUFFER_LENGTH && readbuf[i] != ' ' && readbuf[i] != '\0'; i++){
+ 			command[j++] = readbuf[i];
+ 	}
+
+ 	int k=0;
+ 	command[j] = 0;
+ 	while(i < BUFFER_LENGTH && readbuf[i] == ' '){
+ 		i++;
+ 	}
+ 	if (readbuf[i]=='\0'){
+ 		return k;
+ 	}
+
+ 	k=1;
+ 	for(j=0; i<BUFFER_LENGTH;) {
+ 		if(k>=MAX_PARAMETERS || j >= LENGTH_PARAMETERS)
+ 			return -1;
+ 		if(readbuf[i]!=' ') { //estoy en un caracter y hay un siguiente
+ 			parameters[k-1][j++] = readbuf[i++];
+ 		}
+ 		else {
+ 			parameters[k-1][j] = 0;
+ 			j=0;
+ 			while(i<BUFFER_LENGTH && readbuf[i]==' '){
+ 				i++;
+ 			}
+ 			if (readbuf[i]=='\0'){
+ 				return k;
+ 			}
+ 			k++;
+ 		}
+ 	}
+ 	return k;
+}
 
 static uint8_t split(char * input, char * buf[], uint8_t maxCount){
 
@@ -218,9 +257,9 @@ void runShell(){
         char input[MAX_CMD_LEN];
 
         if(readInput(input) < 0)
-            continue;
+            return;
         if(_strcmp(input, "") == 0)
-            continue;
+            return;
         char* argv0[64];
         int totalArgc = split(input, argv0, 64);
 
