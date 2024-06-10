@@ -1,6 +1,7 @@
 #include <naiveGraphicsConsole.h>
 #include <time.h>
 #include <stdint.h>
+#include <scheduler.h>
 
 // Define el identificador de excepción para la división por cero.
 #define ZERO_EXCEPTION_ID 0
@@ -60,5 +61,6 @@ void exceptionDispatcher(uint64_t exception, uint64_t regdata[18]) {
 	ngc_printColor(errMsg, RED);
 	ngc_printColor(errNames[exception], RED);
 	printRegisters(regdata);
+	terminateProcess(getPID());
 	restart();
 }

@@ -12,8 +12,10 @@ loader:
 
 restart:
 	call getStackBase
+
 rt:	mov rsp, rax				; Set up the stack with the returned address
 	call main
+	
 hang:
 	cli
 	hlt	; halt machine should kernel return
