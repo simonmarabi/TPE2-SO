@@ -172,7 +172,7 @@ void ngc_printChar(char c) {
         ngc_printNewline();
         return;
     } else 
-    if (c == 0x7F) // BACKSPACE code
+    if (c == 8) // BACKSPACE code
     {
         delete_last_char();
         return;

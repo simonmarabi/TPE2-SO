@@ -10,7 +10,7 @@
 // Función help (sin parámetros)
 int help(int argc, const char* argv[])
 {
-	if(argc!=0){
+	if(argc>1){
 		printf("Be careful, help does not take any parameters\n");
 	}
 	// se corre el comando de todas formas
@@ -37,7 +37,7 @@ int help(int argc, const char* argv[])
 
 // Función para verificar la excepción de división por cero (sin parámetros)
 int divideByZero(int argc, const char* argv[]){
-	if(argc!=0){
+	if(argc!=1){
 		printf("\tTry divideByZero without parameters\n");
 		return -1;
 	}
@@ -47,7 +47,7 @@ int divideByZero(int argc, const char* argv[]){
 
 // Función para verificar la excepción de código de operación inválido (sin parámetros)
 int invalidOPCode(int argc, const char* argv[]){
-	if(argc!=0){
+	if(argc!=1){
 		printf("\tTry invalidopcode without parameters\n");
 		return -1;
 	}
@@ -57,7 +57,7 @@ int invalidOPCode(int argc, const char* argv[]){
 
 // Función para mostrar información de registros (sin parámetros)
 int inforeg(int argc, const char* argv[]){
-	if(argc!=0){
+	if(argc!=1){
 		printf("\tTry inforeg without parameters\n");
 		return -1;
 	}
@@ -67,7 +67,7 @@ int inforeg(int argc, const char* argv[]){
 
 // Función para cambiar el tamaño de fuente (1 parámetro: setting)
 int changeFontSize(int argc, const char* argv[]){
-	if(argc != 1){
+	if(argc != 2){
 		printf("\tTry change font size with 1 parameter (size)\n");
 		return -1;
 	}
@@ -88,7 +88,7 @@ int changeFontSize(int argc, const char* argv[]){
 
 // Función para mostrar la hora actual del sistema (sin parámetros)
 int time(int argc, const char* argv[]){
-	if(argc!=0){
+	if(argc!=1){
 		printf("\tTry time without parameters\n");
 		return -1;
 	}

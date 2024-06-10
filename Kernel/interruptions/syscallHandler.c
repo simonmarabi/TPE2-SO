@@ -31,7 +31,6 @@ void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
 // Función para manejar la lectura desde el sistema
 int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
     fd = fdLocalToGlobal(fd);
-
     if(fd == 0) {
         if(getBackground()) {
             blockProcess(getPID());

@@ -6,7 +6,6 @@
 #define KEY_COUNT 105
 #define BUFF_LEN 4096U
 
-//Tabla de conversión de scancode a Key
 static const Key KeyTable[] = {
     0, KEY_ESC, KEY_1, KEY_2,
     KEY_3, KEY_4, KEY_5, KEY_6,
@@ -31,7 +30,7 @@ static const Key KeyTable[] = {
     KEY_NUM_2, KEY_NUM_3, KEY_NUM_0, KEY_NUM_PERIOD,
     0, 0, KEY_LESS_THAN, KEY_F11, KEY_F12};
 
-//Tabla de conversión de Key a ascii
+
 static const uint8_t AsciiTable[] = {
     0,-1,0,0,0,
     0,0,0,0,
@@ -60,7 +59,6 @@ static const uint8_t AsciiTable[] = {
     '6','1','2','3',
     '0','.','+','\n'};
 
-//Tabla de conversión de Shift+Key a ascii
 static const uint8_t ShiftAsciiTable[] = {
     0,-1,0,0,0,
     0,0,0,0,
@@ -89,12 +87,11 @@ static const uint8_t ShiftAsciiTable[] = {
     '6','1','2','3',
     '0','.','+','\n'};
 
-//Estado (valor booleano) actual de cada tecla
+
 static uint8_t keyState[KEY_COUNT] = {0};
 
 static uint64_t keysToRead = 0;
 
-// Para saber si el último scancode que lei fue 0xE0 (para teclas con scancode de 2 o más bytes) 
 static uint8_t isSpecialKey = 0; 
 static PID blockedpid;
 
@@ -108,13 +105,10 @@ static uint8_t toUpper(uint8_t c) {
     return c;
 }
 
-// Devuelve el estado actual de la tecla
 uint8_t isKeyPressed(Key key) {
     return keyState[key];
 }
 
-// Espera a que llegue una tecla por interrupción (con el cpu en modo baja energía)
-// y la devuelve en formato Key
 Key readKey()
 {
     waitKey();
@@ -125,8 +119,6 @@ Key readKey()
     return k;
 }
 
-// Espera a que llegue una tecla por interrupción (con el cpu en modo baja energía)
-// y la devuelve en formato ascii
 uint8_t readAscii()
 {
     uint8_t c;
@@ -145,7 +137,6 @@ uint8_t readAscii()
     return c;
 }
 
-//Espera en modo baja energía hasta que llegue una tecla
 void waitKey() {
     blockedpid = getPID();
     while(!keysToRead) {
@@ -156,7 +147,6 @@ void waitKey() {
     keysToRead--;
 }
 
-//Conversión de teclas especiales a Key
 Key handleSpecialKey(uint8_t scancode) {
     Key k;
 
@@ -195,11 +185,9 @@ Key handleSpecialKey(uint8_t scancode) {
     return k;
 }
 
-//Handler de interrupción
 void handleKeyboardInterrupt() {
     uint8_t scancode = readKeyRaw();
 
-    //Chequeo si es el comienzo de una tecla especial
     if(!isSpecialKey && scancode == 0xE0) {
         isSpecialKey = 1;
         return;
@@ -208,42 +196,36 @@ void handleKeyboardInterrupt() {
     uint8_t pressed = 1;
     Key k;
 
-    //Caso cuando se suelta una tecla
     if(scancode >= 128) {
         pressed = 0;
         scancode -= 128;
     }
 
-    //Si es una tecla que no me interesa la ignoro
     if(scancode >= 89) return;
 
-    //Caso tecla especial
     if(isSpecialKey) {
         isSpecialKey = 0;
         k = handleSpecialKey(scancode);
     }
-    else k = KeyTable[scancode]; //Sino convierto utilizando la tabla
+    else k = KeyTable[scancode]; 
     
-    if(k == 0) return; //Si es una tecla que no me interesa la ignoro
+    if(k == 0) return; 
 
-    //Toggleo el estado de caps lock solo si se presiono (no si se solto)
     if(k == KEY_LOCK_CAPS) {
         if(pressed)
             keyState[k] = !keyState[k];
     } 
     else 
-        keyState[k] = pressed; //Para el resto de las teclas actualizo el estado normalmente
+        keyState[k] = pressed; 
 
-    //Si presioné una tecla válida la guardo y dejo de esperar
     if(pressed) {
         buffer[write_idx++] = k;
         keysToRead++;
     }
-    //Si llegue al final de buffer vuelvo a empezar
+
     if (write_idx == BUFF_LEN )
         write_idx = 0;
     
-    //Si hay BUFF_LEN teclas para leer significa que estoy sobreescribiendo el buffer
     if (keysToRead > BUFF_LEN)
         keysToRead = BUFF_LEN;
 

@@ -95,4 +95,6 @@ void sys_listpipes();
 
 void sys_listsem();
 
+void sys_yield();
+
 #endif

@@ -9,7 +9,7 @@
 #define REGISTERS 17
 
 #include <stdint.h>
-//#include <tests.h>
+#include <tests.h>
 #include <syscall.h>
 
 #define CMD_COUNT 17
@@ -66,6 +66,7 @@ int sem();
 static Command cmds[] = {
     
 	{"help", help, 0},
+	{"divbyzero", divideByZero, 0},
 	{"invalidopcode", invalidOPCode, 0},
 	{"inforeg", inforeg, 0},
 	{"time", time, 0},
@@ -82,7 +83,12 @@ static Command cmds[] = {
 	{"filter",filter,0},
 	{"ps",ps,0},
 	{"pipe",pipe,0},
-	{"sem",sem,0}
+	{"sem",sem,0},
+	{"test_mm",(CmdHandler)test_mm,0},
+	{"test_prio",(CmdHandler)test_prio,0},
+	{"test_processes",(CmdHandler)test_processes,0},
+	{"test_sync",(CmdHandler)test_sync,0},
+	{"test_no_sync", (CmdHandler)test_no_sync,0}
 };
 
 #endif

@@ -25,8 +25,6 @@ static void setup_IDT_entry (int index, uint64_t offset);
 void load_idt() {
   _cli(); // Deshabilita interrupciones mientras se configuran las entradas de la IDT
 
-  ngc_print("IDT Setup: Disabling interrupts\n");
-
   // Excepciones
   setup_IDT_entry(0x00, (uint64_t)&_divisionByZeroInterruption);
   setup_IDT_entry(0x06, (uint64_t)&_invalidOpCodeInterruption);
@@ -38,13 +36,10 @@ void load_idt() {
   // Interrupciones de Syscall
   setup_IDT_entry(0x80, (uint64_t)&_irq80Handler);
 
-  ngc_print("IDT Setup: Configuring masks\n");
-
   // Configuración de máscaras para interrupciones
   picMasterMask(0xFC); // 0b11111100
   picSlaveMask(0xFF);  // 0b11111111
 
-  ngc_print("IDT Setup: Enabling interrupts\n");
   _sti(); // Habilita interrupciones
 }
 
@@ -56,8 +51,4 @@ static void setup_IDT_entry (int index, uint64_t offset) {
   idt[index].offset_m = (offset >> 16) & 0xFFFF;
   idt[index].offset_h = (offset >> 32) & 0xFFFFFFFF;
   idt[index].other_cero = 0;
-
-  ngc_print("IDT Entry Setup: Index ");
-  ngc_printInt(index);
-  ngc_print("\n");
 }

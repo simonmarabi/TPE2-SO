@@ -17,6 +17,7 @@
         "commands.h": "c",
         "stringutil.h": "c",
         "string.h": "c",
-        "speaker.h": "c"
+        "speaker.h": "c",
+        "syscall.h": "c"
     }
 }
