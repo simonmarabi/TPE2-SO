@@ -1,7 +1,6 @@
 #pragma once
 
-void test_mm();
+uint64_t test_mm(uint64_t argc, char *argv[]);
 void test_prio();
-void test_processes();
-void test_sync();
-void test_no_sync();
+int64_t test_processes(uint64_t argc, char *argv[]);
+uint64_t test_sync(uint64_t argc, char *argv[]);

@@ -18,6 +18,9 @@
         "stringutil.h": "c",
         "string.h": "c",
         "speaker.h": "c",
-        "syscall.h": "c"
+        "syscall.h": "c",
+        "inforeg.h": "c",
+        "random": "c",
+        "test_util.h": "c"
     }
 }

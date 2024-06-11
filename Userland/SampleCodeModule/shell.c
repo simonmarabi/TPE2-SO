@@ -115,7 +115,6 @@ void runCommand(Command cmd, int argc, char** argv)
     if(cmd.isBackground)
     {
         argv[argc+1] = "1";
-
         PID pid = sys_createprocess(&shellProcessWrapper, argc+ WRAPPER_ARGS, argv);
         sys_chgpriority(pid, 1);
         sys_sempost(START_PROC_SEM); 
@@ -195,8 +194,8 @@ void runShell(){
             
         char* argv0[64];
         int totalArgc = split(input, argv0, 64);
+        
         int argc0 = totalArgc;
-
         char* argv1[64];
         int pipeCommand = checkPipeCommand(&argc0, argv0, argv1);
         

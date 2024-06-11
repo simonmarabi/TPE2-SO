@@ -1,7 +1,7 @@
 GLOBAL sys_write
 GLOBAL sys_read
 GLOBAL sys_time
-GLOBAL sys_inforeg
+GLOBAL sys_setTerminalRawMode
 GLOBAL sys_changeFontSize
 GLOBAL sys_printColor
 GLOBAL sys_clear_screen
@@ -52,8 +52,8 @@ sys_time:
     int 80h             ; Realizar la llamada al sistema
     ret
 
-sys_inforeg:
-    mov rax, 0x03       ; Número de función para sys_inforeg
+sys_setTerminalRawMode:
+    mov rax, 0x03       ; Número de función para sys_setTerminalRawMode
     int 80h             ; Realizar la llamada al sistema
     ret
 

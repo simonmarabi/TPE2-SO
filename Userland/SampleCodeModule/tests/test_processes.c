@@ -1,40 +1,9 @@
-#include <inout.h>
-#include <syscalls.h>
-#include <test_util.h>
-
-//TO BE INCLUDED
-static void endless_loop()
-{
-  while (1) // added yield so that it runs faster
-    sys_yield();
-}
-
-static uint32_t my_create_process(void *func, char *name)
-{
-  char *argv[] = {name};
-  return sys_createprocess(func, 1, argv);
-}
-
-static uint32_t my_kill(uint32_t pid)
-{
-  return sys_kill(pid);
-}
-
-static uint32_t my_block(uint32_t pid)
-{
-  return sys_block(pid);
-}
-
-static uint32_t my_unblock(uint32_t pid)
-{
-  return sys_unblock(pid);
-}
-
-#define MAX_PROCESSES 3000 //Should be around 80% of the the processes handled by the kernel
+#include <stdio.h>
+#include "syscalls.h"
+#include "test_util.h"
 
 enum State
 {
-  ERROR,
   RUNNING,
   BLOCKED,
   KILLED
@@ -42,33 +11,39 @@ enum State
 
 typedef struct P_rq
 {
-  uint32_t pid;
+  int32_t pid;
   enum State state;
 } p_rq;
 
-// se saca afuera para no ocupar stack
-static p_rq p_rqs[MAX_PROCESSES];
-
-void test_processes()
+int64_t test_processes(uint64_t argc, char *argv[])
 {
-  // se modifico porque uint8_t no alcanzaba para la cantidad de procesos
-  uint64_t rq;
-  uint64_t alive = 0;
-  uint64_t action;
+  uint8_t rq;
+  uint8_t alive = 0;
+  uint8_t action;
+  uint64_t max_processes;
+  char *argvAux[] = {0};
 
-  printf("Creating %d processes..\n",MAX_PROCESSES);
+  if (argc < 2){
+    printf("This test require 1 parameter (process num)\n");
+    return -1;
+  }
+  if ((max_processes = satoi(argv[1])) <= 0)
+    return -1;
+
+  p_rq p_rqs[max_processes];
+
   while (1)
   {
 
-    // Create MAX_PROCESSES processes
-    for (rq = 0; rq < MAX_PROCESSES; rq++)
+    // Create max_processes processes
+    for (rq = 0; rq < max_processes; rq++)
     {
-      p_rqs[rq].pid = my_create_process(&endless_loop, "endless_loop"); // TODO: Port this call as required
+      p_rqs[rq].pid = sys_createprocess(&endless_loop, 0, argvAux);
 
       if (p_rqs[rq].pid == -1)
-      {                                     // TODO: Port this as required
-        printf("Error creating process\n"); // TODO: Port this as required
-        return;
+      {
+        printf("test_processes: ERROR creating process\n");
+        return -1;
       }
       else
       {
@@ -81,19 +56,19 @@ void test_processes()
     while (alive > 0)
     {
 
-      for (rq = 0; rq < MAX_PROCESSES; rq++)
+      for (rq = 0; rq < max_processes; rq++)
       {
-        action = GetUniform(2) % 2;
+        action = GetUniform(100) % 2;
 
         switch (action)
         {
         case 0:
           if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED)
           {
-            if (my_kill(p_rqs[rq].pid) == -1)
-            {                                    // TODO: Port this as required
-              printf("Error killing process\n"); // TODO: Port this as required
-              return;
+            if (sys_kill(p_rqs[rq].pid) == -1)
+            {
+              printf("test_processes: ERROR killing process\n");
+              return -1;
             }
             p_rqs[rq].state = KILLED;
             alive--;
@@ -103,10 +78,10 @@ void test_processes()
         case 1:
           if (p_rqs[rq].state == RUNNING)
           {
-            if (my_block(p_rqs[rq].pid) == -1)
-            {                                     // TODO: Port this as required
-              printf("Error blocking process\n"); // TODO: Port this as required
-              return;
+            if (sys_block(p_rqs[rq].pid) == -1)
+            {
+              printf("test_processes: ERROR blocking process\n");
+              return -1;
             }
             p_rqs[rq].state = BLOCKED;
           }
@@ -115,17 +90,16 @@ void test_processes()
       }
 
       // Randomly unblocks processes
-      for (rq = 0; rq < MAX_PROCESSES; rq++)
-        if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2)
+      for (rq = 0; rq < max_processes; rq++)
+        if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2)
         {
-          if (my_unblock(p_rqs[rq].pid) == -1)
-          {                                       // TODO: Port this as required
-            printf("Error unblocking process\n"); // TODO: Port this as required
-            return;
+          if (sys_unblock(p_rqs[rq].pid) == -1)
+          {
+            printf("test_processes: ERROR unblocking process\n");
+            return -1;
           }
           p_rqs[rq].state = RUNNING;
         }
     }
-  printf("OK\n");
   }
 }

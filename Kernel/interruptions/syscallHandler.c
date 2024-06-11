@@ -13,9 +13,10 @@
 #include <processManagement.h>
 
 #define SEM_OFFSET 10000
+static uint8_t rawMode = 0;
 
 extern uint64_t info[17];
-extern uint8_t screenshot;
+uint8_t screenshot = 1;
 
 typedef int64_t (*syscallT) (uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 
@@ -31,6 +32,16 @@ void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
 // Función para manejar la lectura desde el sistema
 int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
     fd = fdLocalToGlobal(fd);
+
+    //Modo raw devuelve input de teclado sin ningun procesamiento
+    if(rawMode) {
+        int i;
+        for(i = 0; i < bytes; i++) {
+            buffer[i] = readAscii();
+        }
+        return i;
+    }
+
     if(fd == 0) {
         if(getBackground()) {
             blockProcess(getPID());
@@ -81,15 +92,8 @@ static uint64_t sys_time_handler(){
 }
 
 // Función para obtener información de los registros
-static uint8_t sys_inforeg_handler(uint64_t regVec[17]){
-    if (screenshot){
-        for (int i = 0; i < 17; i++)
-        {
-            regVec[i] = info[i];
-        }
-        
-    }
-    return screenshot;
+static void sys_setTerminalRawMode_handler(uint8_t setRaw) {
+    rawMode = setRaw != 0;
 }
 
 // Función para cambiar el tamaño de la fuente
@@ -256,7 +260,7 @@ static syscallT syscalls[]  = {
     (syscallT) sys_read_handler, 
     (syscallT) sys_write_handler, 
     (syscallT) sys_time_handler, 
-    (syscallT) sys_inforeg_handler, 
+    (syscallT) sys_setTerminalRawMode_handler, 
     (syscallT) sys_font_handler, 
     (syscallT) sys_printColor_handler, 
     (syscallT) sys_clear_screen_handler, 

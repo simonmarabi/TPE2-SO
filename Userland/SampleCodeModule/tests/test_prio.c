@@ -1,107 +1,52 @@
-#include <inout.h>
-#include <syscalls.h>
+#include <stdint.h>
+#include <stdio.h>
+#include "syscalls.h"
+#include "test_util.h"
 
-#define MINOR_WAIT 5000000                               // TODO: To prevent a process from flooding the screen
-#define WAIT      100000000                              // TODO: Long enough to see theese processes beeing run at least twice
-
-static uint64_t my_getpid(){
-  return sys_getpid();
-}
-
-static uint64_t my_create_process(void* func, char * name){
-  char* argv[] = {name};
-  return sys_createprocess(func, 1, argv);
-}
-
-static uint64_t my_nice(uint64_t pid, uint64_t newPrio){
-  return sys_chgpriority(pid, newPrio);
-}
-
-static uint64_t my_kill(uint64_t pid){
-  return sys_kill(pid);
-}
-
-static uint64_t my_block(uint64_t pid){
-  return sys_block(pid);
-}
-
-static uint64_t my_unblock(uint64_t pid){
-  return sys_unblock(pid);
-}
-
-static void bussy_wait(uint64_t n){
-  uint64_t i;
-  for (i = 0; i < n; i++);
-}
-
-static void endless_loop(){
-  uint64_t pid = my_getpid();
-
-  while(1){
-    printf("%d ",pid);
-    bussy_wait(MINOR_WAIT);
-  }
-}
+#define MINOR_WAIT 1000 // TODO: Change this value to prevent a process from flooding the screen
+#define WAIT 1000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
+#define LOWEST 0  // TODO: Change as required
+#define MEDIUM 1  // TODO: Change as required
+#define HIGHEST 2 // TODO: Change as required
 
-void test_prio(){
-  uint64_t pids[TOTAL_PROCESSES];
+int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
+
+void test_prio()
+{
+  int64_t pids[TOTAL_PROCESSES];
+  char *argv[] = {0};
   uint64_t i;
 
-  for(i = 0; i < TOTAL_PROCESSES; i++)
-    pids[i] = my_create_process(&endless_loop, "endless_loop");
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    pids[i] = sys_createprocess("endless_loop_print", 0, argv);
 
   bussy_wait(WAIT);
   printf("\nCHANGING PRIORITIES...\n");
 
-  for(i = 0; i < TOTAL_PROCESSES; i++){
-    switch (i % 3){
-      case 0:
-        my_nice(pids[i], 1); //lowest priority 
-        break;
-      case 1:
-        my_nice(pids[i], 2); //medium priority
-        break;
-      case 2:
-        my_nice(pids[i], 3); //highest priority
-        break;
-    }
-  }
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    sys_chgpriority(pids[i], prio[i]);
 
   bussy_wait(WAIT);
   printf("\nBLOCKING...\n");
 
-  for(i = 0; i < TOTAL_PROCESSES; i++) {
-    printf("BLOCKING PID %d\n",pids[i]);
-    my_block(pids[i]);
-  }
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    sys_block(pids[i]);
 
   printf("CHANGING PRIORITIES WHILE BLOCKED...\n");
-  for(i = 0; i < TOTAL_PROCESSES; i++){
-    switch (i % 3){
-      case 0:
-        my_nice(pids[i], 2); //medium priority 
-        break;
-      case 1:
-        my_nice(pids[i], 2); //medium priority
-        break;
-      case 2:
-        my_nice(pids[i], 2); //medium priority
-        break;
-    }
-  }
+
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    sys_chgpriority(pids[i], MEDIUM);
 
   printf("UNBLOCKING...\n");
 
-  for(i = 0; i < TOTAL_PROCESSES; i++)
-    my_unblock(pids[i]);
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    sys_unblock(pids[i]);
 
   bussy_wait(WAIT);
   printf("\nKILLING...\n");
 
-  for(i = 0; i < TOTAL_PROCESSES; i++) {
-    printf("KILLING PID %d\n",pids[i]);
-    my_kill(pids[i]);
-  }
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    sys_kill(pids[i]);
 }

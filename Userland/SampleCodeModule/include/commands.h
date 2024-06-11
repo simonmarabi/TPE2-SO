@@ -6,13 +6,13 @@
 #define LENGTH_PARAMETERS 256
 #define BUFFER_LENGTH 256
 #define COMMANDS_LENGTH 9
-#define REGISTERS 17
+#define REGISTERS 21
 
 #include <stdint.h>
 #include <tests.h>
 #include <syscall.h>
 
-#define CMD_COUNT 24
+#define CMD_COUNT 21
 
 
 typedef int (*CmdHandler)(int argc, const char* argv[]);
@@ -59,9 +59,9 @@ int filter();
 
 int ps();
 
-int pipe();
+void philosopherManager();
 
-int sem();
+int printcmd();
 
 static Command cmds[] = {
     
@@ -71,9 +71,8 @@ static Command cmds[] = {
 	{"inforeg", inforeg, 0},
 	{"time", time, 0},
 	{"changefontsize", changeFontSize, 0},
-	{"snakes", snakes, 0},
 	{"clear", clearScreen, 0},
-	{"printmem", printMem, 0},
+	{"mem", printMem, 0},
 	{"kill",kill,0},
 	{"loop",loop,0},
 	{"nice",nice,0},
@@ -82,13 +81,11 @@ static Command cmds[] = {
 	{"wc",wc,0},
 	{"filter",filter,0},
 	{"ps",ps,0},
-	{"pipe",pipe,0},
-	{"sem",sem,0},
+	{"phylo",(CmdHandler)philosopherManager,0},
 	{"test_mm",(CmdHandler)test_mm,0},
 	{"test_prio",(CmdHandler)test_prio,0},
 	{"test_processes",(CmdHandler)test_processes,0},
-	{"test_sync",(CmdHandler)test_sync,0},
-	{"test_no_sync", (CmdHandler)test_no_sync,0}
+	{"test_sync",(CmdHandler)test_sync,0}
 };
 
 #endif

@@ -25,7 +25,7 @@ EXTERN syscallDispatcher
 EXTERN scheduler
 
 GLOBAL info
-GLOBAL screenshot
+;GLOBAL screenshot
 
 SECTION .text
 										; Macros que se utilizan para guardar y restaurar el estado de los registros en la pila.
@@ -189,7 +189,7 @@ picSlaveMask:
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-pushState
+	pushState
 
 	mov rdi, 0 ; pasaje de parametro
 	call irqDispatcher
@@ -248,6 +248,6 @@ haltcpu:
 
 SECTION .bss
 	aux resq 1
-	info resq 17		; reservo 17 espacios de 8 bytes para guardar registros en caso de screenshot
-	regdata resq 18		; reservo 18 espacios de 8 bytes para guardar registros en caso de excepción
-	screenshot resb 1 	; reservo un byte para poner en 1 si hubo un screenshot
+	info resq 17			; reservo 17 espacios de 8 bytes para guardar registros en caso de screenshot
+	regdata resq 18			; reservo 18 espacios de 8 bytes para guardar registros en caso de excepción
+	;screenshot resb 1 		; reservo un byte para poner en 1 si hubo un screenshot

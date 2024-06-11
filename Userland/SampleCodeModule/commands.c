@@ -14,22 +14,34 @@ int help(int argc, const char* argv[])
 		printf("Be careful, help does not take any parameters\n");
 	}
 	// se corre el comando de todas formas
-	printf("All Commands\n");
-	for (int i=0; i <= CMD_COUNT;i++)
-	{
-		printf("%s\n",cmds[i].name);
-	}
-	printf("Wiki\n");
-	const char* helpstring = 
+	printf("All Commands:\n");
+	
+	const char * helpstring = {
+		
 	"\thelp                 Provides help information for commands.\n"
     "\tdividebyzero         Command to verify the operation of the exception routine \"Divide by zero\"\n"
 	"\tinvalidopcode        Command to verify the operation of the exception routine \"Invalid Opcode\"\n"
 	"\tinforeg              Prints on screen the value of all registers.\n"
 	"\ttime                 Command to display the system day and time.\n"
 	"\tchangefontsize       Changes font size: insert 1 2 3 for the desired level.\n"
-	"\tsnakes               Get ready to play Snakes!.\n"
 	"\tclear                Clear screen\n"
-	"\tmem                  Prints on screen memory state\n";
+	"\tmem                  Prints on screen memory state\n"
+	"\tkill                 Kills a Process\n"
+	"\tloop                 Generates a Loop\n"
+	"\tnice                 Changes process priority\n"
+	"\tblock                Blocks a process\n"
+	"\tcat                  Prints stdin as the same form as it receives\n"
+	"\twc                   Counts input lines\n"
+	"\tfilter               Filters the input vocals\n"
+	"\tps                   Prints the list of the processes\n"
+	"\tphylo                Implements the problem of the philosophers\n"
+	"\ttest_mm              Test of memory manager\n"
+	"\ttest_prio            Test of scheduler\n"
+	"\ttest_processes       Test of process manager\n"
+	"\ttest_sync            Test of syncronization\n"
+							
+	};
+	
 	printf(helpstring);
 
 	return 0;
@@ -37,7 +49,7 @@ int help(int argc, const char* argv[])
 
 // Función para verificar la excepción de división por cero (sin parámetros)
 int divideByZero(int argc, const char* argv[]){
-	if(argc!=1){
+	if(argc < 1){
 		printf("\tTry divideByZero without parameters\n");
 		return -1;
 	}
@@ -47,7 +59,7 @@ int divideByZero(int argc, const char* argv[]){
 
 // Función para verificar la excepción de código de operación inválido (sin parámetros)
 int invalidOPCode(int argc, const char* argv[]){
-	if(argc!=1){
+	if(argc<1){
 		printf("\tTry invalidopcode without parameters\n");
 		return -1;
 	}
@@ -57,7 +69,7 @@ int invalidOPCode(int argc, const char* argv[]){
 
 // Función para mostrar información de registros (sin parámetros)
 int inforeg(int argc, const char* argv[]){
-	if(argc!=1){
+	if(argc<1){
 		printf("\tTry inforeg without parameters\n");
 		return -1;
 	}
@@ -67,7 +79,7 @@ int inforeg(int argc, const char* argv[]){
 
 // Función para cambiar el tamaño de fuente (1 parámetro: setting)
 int changeFontSize(int argc, const char* argv[]){
-	if(argc != 2){
+	if(argc < 2){
 		printf("\tTry change font size with 1 parameter (size)\n");
 		return -1;
 	}
@@ -88,7 +100,7 @@ int changeFontSize(int argc, const char* argv[]){
 
 // Función para mostrar la hora actual del sistema (sin parámetros)
 int time(int argc, const char* argv[]){
-	if(argc!=1){
+	if(argc<1){
 		printf("\tTry time without parameters\n");
 		return -1;
 	}
@@ -119,7 +131,7 @@ int loop(){
 
 int kill(int argc, const char* argv[]){
 	
-	if (argc <2)
+	if (argc < 2)
 	{
 		printf("USE: kill [PID]\n");
 		return -1;
@@ -270,14 +282,10 @@ int ps(){
     return 0;
 }
 
-int pipe() {
-    sys_listpipes();
-    return 0;
+int printcmd(){
+	printf("%s",cmds[0].name);
+	return 0;
 }
 
-int sem() {
-    sys_listsem();
-    return 0;
-}
 
 

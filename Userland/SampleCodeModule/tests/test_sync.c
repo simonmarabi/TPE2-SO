@@ -1,93 +1,91 @@
-#include <inout.h>
-#include <stringUtil.h>
-#include <syscalls.h>
+#include <stdint.h>
+#include <stdio.h>
+#include "syscalls.h"
+#include "test_util.h"
 
-#define N 100000
+#define SEM_ID 5
+#define TOTAL_PAIR_PROCESSES 3
 
-static uint32_t my_create_process(void* func, int argc, char** argv){
-  return sys_createprocess(func, argc, argv);
-}
+int64_t global; // shared memory
 
-static uint64_t my_sem_open(int sem_id, uint64_t initialValue){
-  return sys_semopen(sem_id, initialValue);
-}
-
-static uint64_t my_sem_wait(int sem_id){
-  return sys_semwait(sem_id);
-}
-
-static uint64_t my_sem_post(int sem_id){
-  return sys_sempost(sem_id);
-}
-
-static uint64_t my_sem_close(int sem_id){
-  return sys_semclose(sem_id);
-}
-
-#define TOTAL_PAIR_PROCESSES 2
-#define SEM_ID 30
-
-static int64_t global;  //shared memory
-
-static void slowInc(int64_t *p, int64_t inc){
-  int64_t aux = *p;
+void slowInc(int64_t *p, int64_t inc)
+{
+  uint64_t aux = *p;
   aux += inc;
-  sys_yield();
+  sys_yield(); // This makes the race condition highly probable
   *p = aux;
 }
 
-static void inc(int argc, char** argv){
-  uint64_t sem; int64_t value;
-  strToIntBase(argv[1], _strlen(argv[1]), 10, (int*)&sem, 1);
-  strToIntBase(argv[2], _strlen(argv[2]), 10, (int*)&value, 0);
+uint64_t my_process_inc(uint64_t argc, char *argv[])
+{
+  uint64_t n;
+  int8_t inc;
+  int8_t use_sem;
+
+  if (argc != 3){
+    printf("This test requires 3 parameters (increments, processes, sem on/off)\n");
+    return -1;
+  }
+  
+  if ((n = satoi(argv[0])) <= 0)
+    return -1;
+  if ((inc = satoi(argv[1])) == 0)
+    return -1;
+  if ((use_sem = satoi(argv[2])) < 0)
+    return -1;
+
+  if (use_sem)
+    if (sys_semopen(SEM_ID, 1) == -1)
+    {
+      printf("test_sync: ERROR opening semaphore\n");
+      sys_exit();
+      return -1;
+    }
 
   uint64_t i;
-
-  if (sem && my_sem_open(SEM_ID, 1) < 0){
-    printf("ERROR OPENING SEM\n");
-    return;
-  }
-  
-  for (i = 0; i < N; i++){
-    if (sem) my_sem_wait(SEM_ID);
-    slowInc(&global, value);
-    if (sem) my_sem_post(SEM_ID);
+  for (i = 0; i < n; i++)
+  {
+    if (use_sem)
+      sys_semwait(SEM_ID);
+    slowInc(&global, inc);
+    if (use_sem)
+      sys_sempost(SEM_ID);
   }
 
-  if (sem) my_sem_close(SEM_ID);
+  if (use_sem)
+    sys_semclose(SEM_ID);
+
   
-  printf("Final value: %d\n", global);
   sys_exit();
+  return 0;
 }
 
-void test_sync(){
-  uint64_t i;
+uint64_t test_sync(uint64_t argc, char *argv[])
+{ //{n, use_sem, 0}
+  uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
+    
+  if (argc < 3){
+    printf("This test requires 2 parameters (increment, sem on/off)\n");
+    return -1;
+  }
+
+  char *argvDec[] = {argv[1], "-1", argv[2], NULL};
+  char *argvInc[] = {argv[1], "1", argv[2], NULL};
 
   global = 0;
 
-  printf("CREATING PROCESSES...(WITH SEM)\n");
-
-  for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    char* argv1[] = {"inc", "1", "1"};
-    char* argv2[] = {"inc", "1", "-1"};
-
-    my_create_process(&inc, 3, argv1);
-    my_create_process(&inc, 3, argv2);
-  }
-}
-
-void test_no_sync(){
   uint64_t i;
-
-  global = 0;
-
-  printf("CREATING PROCESSES...(WITHOUT SEM)\n");
-
-  for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    char* argv1[] = {"inc", "0", "1"};
-    char* argv2[] = {"inc", "0", "-1"};
-
-    my_create_process(&inc, 3, argv1);
-    my_create_process(&inc, 3, argv2);
+  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
+  {
+    pids[i] = sys_createprocess(&my_process_inc, 3, argvDec);
+    pids[i + TOTAL_PAIR_PROCESSES] = sys_createprocess(&my_process_inc, 3, argvInc);
   }
+
+  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
+  {
+    sys_semwait(pids[i]);
+    sys_semwait(pids[i + TOTAL_PAIR_PROCESSES]);
+  }
+  printf("Final value: %d\n", global);
+  return 0;
 }
