@@ -116,16 +116,20 @@ int time(int argc, const char* argv[]){
 }
 //FALTA
 int loop(){
-
 	char timeBuffer[9];
 	do_getTime(timeBuffer);
 	PID pid = sys_getpid();
-
+	int t, newT;
+	strToIntBase(timeBuffer,_strlen(timeBuffer),10,&t,1);
 	while(1){
-
 		char newTimeBuffer[9];
 		do_getTime(newTimeBuffer);
-		printf("[PID:%d] Hey I am Loop :3",pid);
+		strToIntBase(newTimeBuffer,_strlen(newTimeBuffer),10,&newT,1);
+		if((t != newT) && (newT % 3 == 0)){
+			t = newT;
+			printf("[PID:%d] Hey I am Loop :3\n",pid);
+		}
+		sys_yield();
 	}
 }
 

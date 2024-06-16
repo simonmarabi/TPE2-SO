@@ -86,8 +86,7 @@ int main()
 	//carga
 	load_idt();
 	ngc_paint_screen(0x000000);
-	((EntryPoint)sampleCodeModuleAddress)();
-	
+		
 	while(1) _hlt();
 	
 	return 0;

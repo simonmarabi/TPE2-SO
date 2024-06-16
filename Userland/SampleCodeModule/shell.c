@@ -20,8 +20,7 @@ static void setShellBackground(){
 
 static const Command parseCommand(int argc, const char ** argv){
     for(int i = 0; i < CMD_COUNT; i++){
-        if(_strcmp(argv[0], cmds[i].name) != 0) continue;
-
+        if(_strcmp(argv[0], cmds[i].name) != NULL) continue;
         Command c = cmds[i];
         c.isBackground = argv[argc - 1][0] == '&';
         return c;
@@ -59,7 +58,6 @@ int readInput(char *outputBuffer)
 
 int shellProcessWrapper(int argc, char **argv)
 {
-
     sys_semopen(START_PROC_SEM,0);
     sys_semwait(START_PROC_SEM);
     
@@ -78,8 +76,14 @@ int shellProcessWrapper(int argc, char **argv)
     {
         sys_close(unusedPipeEnd);
     }
+
     PID pid = sys_getpid();
-    int retcode = cmd(argc-WRAPPER_ARGS, (const char**) argv);
+    int retcode;
+    if(argv[argc-WRAPPER_ARGS-1][0] == '&')
+        retcode = cmd(argc-WRAPPER_ARGS-1, (const char**) argv);
+    else
+        retcode = cmd(argc-WRAPPER_ARGS, (const char**) argv);
+    
     sys_mapstdfds(pid,0,1);
 
     sys_semclose(START_PROC_SEM);
@@ -115,13 +119,13 @@ void runCommand(Command cmd, int argc, char** argv)
     if(cmd.isBackground)
     {
         argv[argc+1] = "1";
-        PID pid = sys_createprocess(&shellProcessWrapper, argc+ WRAPPER_ARGS, argv);
+        PID pid = sys_createprocess(&shellProcessWrapper, argc + WRAPPER_ARGS, argv);
         sys_chgpriority(pid, 1);
         sys_sempost(START_PROC_SEM); 
     }
     else {
         argv[argc+1] = "0";
-        PID pid = sys_createprocess(&shellProcessWrapper, argc+WRAPPER_ARGS, argv);
+        PID pid = sys_createprocess(&shellProcessWrapper, argc + WRAPPER_ARGS, argv);
         setShellBackground();
         sys_setbackground(pid, FOREGROUND);
         sys_sempost(START_PROC_SEM);

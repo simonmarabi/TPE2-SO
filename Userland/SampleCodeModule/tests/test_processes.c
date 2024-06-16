@@ -4,6 +4,7 @@
 
 enum State
 {
+  ERROR,
   RUNNING,
   BLOCKED,
   KILLED
@@ -23,10 +24,11 @@ int64_t test_processes(uint64_t argc, char *argv[])
   uint64_t max_processes;
   char *argvAux[] = {0};
 
-  if (argc < 2){
+  if (argc != 2){
     printf("This test require 1 parameter (process num)\n");
     return -1;
   }
+  
   if ((max_processes = satoi(argv[1])) <= 0)
     return -1;
 
@@ -58,7 +60,7 @@ int64_t test_processes(uint64_t argc, char *argv[])
 
       for (rq = 0; rq < max_processes; rq++)
       {
-        action = GetUniform(100) % 2;
+        action = GetUniform(2) % 2;
 
         switch (action)
         {
@@ -91,7 +93,7 @@ int64_t test_processes(uint64_t argc, char *argv[])
 
       // Randomly unblocks processes
       for (rq = 0; rq < max_processes; rq++)
-        if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2)
+        if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2)
         {
           if (sys_unblock(p_rqs[rq].pid) == -1)
           {

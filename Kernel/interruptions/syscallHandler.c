@@ -33,19 +33,18 @@ void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
 int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
     fd = fdLocalToGlobal(fd);
 
-    //Modo raw devuelve input de teclado sin ningun procesamiento
-    if(rawMode) {
+    if(fd == STDIN) {
+        if(getBackground()) {
+            blockProcess(getPID());
+            return 0;
+        }
+
+        if(rawMode) {
         int i;
         for(i = 0; i < bytes; i++) {
             buffer[i] = readAscii();
         }
         return i;
-    }
-
-    if(fd == 0) {
-        if(getBackground()) {
-            blockProcess(getPID());
-            return 0;
         }
 
         int i;
@@ -61,26 +60,22 @@ int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
 
             //Backspace
             if(c == 8) {
-                //Si llego a la pos minima no sigo borrando
                 if(i <= 0) {
                     i--;
                     continue;
                 }
                 i-=2;
             }
-            else buffer[i] = c; //Escribo el caracter al buffer
-        
-            //Imprimo en pantalla el caracter
+            else buffer[i] = c;
             ngc_printChar(c);
 
-            //Si recibo un enter dejo de leer del teclado y devuelvo
             if(c == '\n') {
                 i++;
                 break;
             }
         }
     
-        return i; //Devuelvo la cantidad de caracteres que leí
+        return i;
     }
 
     return readFd(fd, buffer, bytes);
