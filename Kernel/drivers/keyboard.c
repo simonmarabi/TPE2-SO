@@ -89,9 +89,7 @@ static const uint8_t ShiftAsciiTable[] = {
 
 
 static uint8_t keyState[KEY_COUNT] = {0};
-
 static uint64_t keysToRead = 0;
-
 static uint8_t isSpecialKey = 0; 
 static PID blockedpid;
 
@@ -109,8 +107,7 @@ uint8_t isKeyPressed(Key key) {
     return keyState[key];
 }
 
-Key readKey()
-{
+Key readKey() {
     waitKey();
 
     Key k = buffer[read_idx++];
@@ -119,27 +116,33 @@ Key readKey()
     return k;
 }
 
-uint8_t readAscii()
-{
+uint8_t readAscii() {
     uint8_t c;
     Key k;
-    while((c = AsciiTable[(k = readKey())]) == 0);
+    while ((c = AsciiTable[(k = readKey())]) == 0);
 
     uint8_t capslock = isKeyPressed(KEY_LOCK_CAPS);
     uint8_t shift = isKeyPressed(KEY_LSHIFT) || isKeyPressed(KEY_RSHIFT);
     uint8_t caps = (capslock && !shift) || (shift && !capslock);
+    uint8_t ctrl = isKeyPressed(KEY_LCTRL) || isKeyPressed(KEY_RCTRL);
 
-    if(shift) c = ShiftAsciiTable[k];
+    if (shift) c = ShiftAsciiTable[k];
     else c = AsciiTable[k];
 
-    if(caps) c = toUpper(c);
+    if (caps) c = toUpper(c);
+
+    // Manejo de combinaciones con Ctrl
+    if (ctrl) {
+        if (k == KEY_C) return 3; // ASCII para Ctrl+C
+        if (k == KEY_D) return 4; // ASCII para Ctrl+D
+    }
 
     return c;
 }
 
 void waitKey() {
     blockedpid = getPID();
-    while(!keysToRead) {
+    while (!keysToRead) {
         write_idx = read_idx;
         blockProcess(blockedpid);
     }
@@ -150,7 +153,7 @@ void waitKey() {
 Key handleSpecialKey(uint8_t scancode) {
     Key k;
 
-    switch(scancode) {
+    switch (scancode) {
         case 0x4D:
             k = KEY_ARROW_RIGHT;
             break;
@@ -164,6 +167,9 @@ Key handleSpecialKey(uint8_t scancode) {
             k = KEY_ARROW_UP;
             break;
         case 0x1D:
+            k = KEY_LCTRL;
+            break;
+        case 0xE0:
             k = KEY_RCTRL;
             break;
         case 0x38:
@@ -188,7 +194,7 @@ Key handleSpecialKey(uint8_t scancode) {
 void handleKeyboardInterrupt() {
     uint8_t scancode = readKeyRaw();
 
-    if(!isSpecialKey && scancode == 0xE0) {
+    if (!isSpecialKey && scancode == 0xE0) {
         isSpecialKey = 1;
         return;
     }
@@ -196,36 +202,37 @@ void handleKeyboardInterrupt() {
     uint8_t pressed = 1;
     Key k;
 
-    if(scancode >= 128) {
+    if (scancode >= 128) {
         pressed = 0;
         scancode -= 128;
     }
 
-    if(scancode >= 89) return;
+    if (scancode >= 89) return;
 
-    if(isSpecialKey) {
+    if (isSpecialKey) {
         isSpecialKey = 0;
         k = handleSpecialKey(scancode);
+    } else {
+        k = KeyTable[scancode];
     }
-    else k = KeyTable[scancode]; 
-    
-    if(k == 0) return; 
 
-    if(k == KEY_LOCK_CAPS) {
-        if(pressed)
+    if (k == 0) return;
+
+    if (k == KEY_LOCK_CAPS) {
+        if (pressed)
             keyState[k] = !keyState[k];
-    } 
-    else 
-        keyState[k] = pressed; 
+    } else {
+        keyState[k] = pressed;
+    }
 
-    if(pressed) {
+    if (pressed) {
         buffer[write_idx++] = k;
         keysToRead++;
     }
 
-    if (write_idx == BUFF_LEN )
+    if (write_idx == BUFF_LEN)
         write_idx = 0;
-    
+
     if (keysToRead > BUFF_LEN)
         keysToRead = BUFF_LEN;
 

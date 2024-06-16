@@ -19,7 +19,7 @@ int help(int argc, const char* argv[])
 	const char * helpstring = {
 		
 	"\thelp                 Provides help information for commands.\n"
-    "\tdividebyzero         Command to verify the operation of the exception routine \"Divide by zero\"\n"
+    "\tdivbyzero            Command to verify the operation of the exception routine \"Divide by zero\"\n"
 	"\tinvalidopcode        Command to verify the operation of the exception routine \"Invalid Opcode\"\n"
 	"\tinforeg              Prints on screen the value of all registers.\n"
 	"\ttime                 Command to display the system day and time.\n"
@@ -125,7 +125,7 @@ int loop(){
 		char newTimeBuffer[9];
 		do_getTime(newTimeBuffer);
 		strToIntBase(newTimeBuffer,_strlen(newTimeBuffer),10,&newT,1);
-		if((t != newT) && (newT % 3 == 0)){
+		if((t != newT) && (newT % 1 == 0)){
 			t = newT;
 			printf("[PID:%d] Hey I am Loop :3\n",pid);
 		}

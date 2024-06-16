@@ -22,6 +22,8 @@ typedef int64_t (*syscallT) (uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
 
 // Función para manejar la escritura en el sistema
 void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
+    fd = fdLocalToGlobal(fd);
+
     if (fd == STDOUT) {
         for (uint64_t i = 0; i < bytes; i++){
             ngc_printChar(((char*)buffer)[i]);
@@ -30,54 +32,64 @@ void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes){
 }
 
 // Función para manejar la lectura desde el sistema
-int64_t sys_read_handler(uint64_t fd, char * buffer, uint64_t bytes){
+int64_t sys_read_handler(uint64_t fd, char *buffer, uint64_t bytes) {
     fd = fdLocalToGlobal(fd);
-
-    if(fd == STDIN) {
-        if(getBackground()) {
-            blockProcess(getPID());
-            return 0;
-        }
-
-        if(rawMode) {
-        int i;
-        for(i = 0; i < bytes; i++) {
-            buffer[i] = readAscii();
-        }
-        return i;
-        }
-
-        int i;
-        for(i = 0; i < bytes; i++) {
-            char c = readAscii();
-
-            if(c == '\t') {
-                i--;
-                continue;
+    PID pid = getPID();
+    if (fd == STDIN) {
+        if (getBackground()) {
+            if (pid != 1) {
+                blockProcess(pid);
+                return 0;
             }
+        }
 
-            if(c == -1) return -1;
+        if (rawMode) {
+            int i;
+            for (i = 0; i < bytes; i++) {
+                buffer[i] = readAscii();
+            }
+            return i;
+        }
 
-            //Backspace
-            if(c == 8) {
-                if(i <= 0) {
+        int i;
+        for (i = 0; i < bytes; i++) {
+            char c = readAscii();
+            if (getBackground()) {
+                if (pid == 1) {
+                    if (c == 3) { // CTRL + C
+                        _strcpy(buffer, "kill", 5);
+                        return 1;
+                    }
+                    if (c == 4) { // CTRL + D
+                        _strcpy(buffer, "eof", 5);
+                        return 1;
+                    }
+                }
+            } else {
+                if (c == '\t') {
                     i--;
                     continue;
                 }
-                i-=2;
-            }
-            else buffer[i] = c;
-            ngc_printChar(c);
+                if (c == -1) return -1;
 
-            if(c == '\n') {
-                i++;
-                break;
+                // Backspace
+                if (c == 8) {
+                    if (i <= 0) {
+                        i--;
+                        continue;
+                    }
+                    i -= 2;
+                } 
+                else buffer[i] = c;   
+                ngc_printChar(c);
+                if (c == '\n') {
+                    i++;
+                    break;
+                }
             }
         }
-    
         return i;
     }
-
     return readFd(fd, buffer, bytes);
 }
 
@@ -250,6 +262,10 @@ PID sys_createprocess_handler(void* arg0, unsigned int arg1, char** arg2) {
     return processCreate((void*) arg0, (unsigned int)arg1, (char**)arg2);
 }
 
+Background sys_getbackground_handler(){
+    return getBackground();
+}
+
 // Vector de punteros a funciones de llamada al sistema
 static syscallT syscalls[]  = {
     (syscallT) sys_read_handler, 
@@ -287,7 +303,8 @@ static syscallT syscalls[]  = {
     (syscallT) sys_semPost_handler,
     (syscallT) sys_semClose_handler,
     (syscallT) sys_listSemaphore_handler,
-    (syscallT) sys_createprocess_handler
+    (syscallT) sys_createprocess_handler,
+    (syscallT) sys_getbackground_handler
 };
 
 // Función para despachar llamadas al sistema

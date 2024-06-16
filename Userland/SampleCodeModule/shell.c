@@ -13,6 +13,7 @@
 #define WRAPPER_ARGS 3
 
 static PID shellPid;
+static PID forePid;
 
 static void setShellBackground(){
     sys_setbackground(shellPid, BACKGROUND);
@@ -49,11 +50,22 @@ static uint8_t split(char * input, char * buf[], uint8_t maxCount){
 
 int readInput(char *outputBuffer)
 {
-    printf(">$ ");
     int len = 0;
-    while((len = sys_read(0,outputBuffer,MAX_CMD_LEN))<=0);
-    outputBuffer[len-1] = 0;
-    return 0;   
+    if(sys_getbackground() != BACKGROUND){
+        printf(">$ ");
+        while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
+        outputBuffer[len-1] = 0;
+        return 0;  
+    }
+    else{
+        while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
+        if (_strcmp(outputBuffer, "kill") == 0)
+            if(sys_kill(forePid) != -1)
+                printf("Process %d terminated correctly\n", forePid);
+        _strcpy(outputBuffer,"",1);
+        return 0;
+    }
+    return -1;   
 }
 
 int shellProcessWrapper(int argc, char **argv)
@@ -128,6 +140,7 @@ void runCommand(Command cmd, int argc, char** argv)
         PID pid = sys_createprocess(&shellProcessWrapper, argc + WRAPPER_ARGS, argv);
         setShellBackground();
         sys_setbackground(pid, FOREGROUND);
+        forePid = pid;
         sys_sempost(START_PROC_SEM);
     }
 }
@@ -177,6 +190,7 @@ void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** a
     else{
         setShellBackground();
         sys_setbackground(pid0, FOREGROUND);
+        forePid = pid0;
         sys_sempost(START_PROC_SEM);
         sys_sempost(START_PROC_SEM);
     }

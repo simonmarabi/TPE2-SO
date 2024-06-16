@@ -35,6 +35,7 @@ GLOBAL sys_sempost
 GLOBAL sys_semclose
 GLOBAL sys_listsem
 GLOBAL sys_createprocess
+GLOBAL sys_getbackground
 
 section .text
 sys_read:
@@ -215,5 +216,10 @@ sys_listsem:
 
 sys_createprocess:
     mov rax, 0x23       
+    int 80h             
+    ret 
+
+sys_getbackground:
+    mov rax, 0x24       
     int 80h             
     ret 

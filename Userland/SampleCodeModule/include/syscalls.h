@@ -97,4 +97,6 @@ void sys_listsem();
 
 void sys_yield();
 
+Background sys_getbackground();
+
 #endif

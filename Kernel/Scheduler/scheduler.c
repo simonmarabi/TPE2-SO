@@ -302,6 +302,9 @@ void removeTerminated(ProcessNode * terminated){
 
 int64_t terminateProcess(PID pid)
 {
+    if(pid == 1)
+        return -1;
+
     if(readyList.current->pcb.pid == pid)
     {
         readyList.current->pcb.state = TERMINATED;
