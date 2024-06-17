@@ -26,7 +26,6 @@ int help(int argc, const char *argv[])
 		"\tinvalidopcode        Command to verify the operation of the exception routine \"Invalid Opcode\"\n"
 		"\tinforeg              Prints on screen the value of all registers.\n"
 		"\ttime                 Command to display the system day and time.\n"
-		"\tchangefontsize       Changes font size: insert 1 2 3 for the desired level.\n"
 		"\tclear                Clear screen\n"
 		"\tmem                  Prints on screen memory state\n"
 		"\tkill                 Kills a Process\n"

@@ -1,18 +1,3 @@
-make clean
-make all
-cd ..
-make all
-clear
-make clean
-clear
-make clean
-cd Toolchain/
-make clean
-make all
-cd ..
-make all
-clear
-make clean
 cd Toolchain/
 make clean
 make all
@@ -498,3 +483,18 @@ clear
 pvs-studio-analyzer trace -- make
 pvs-studio-analyzer analyze
 plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+clear
+cd root
+ls
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+clear
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+clear
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+clear
