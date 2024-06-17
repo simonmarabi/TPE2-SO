@@ -15,6 +15,8 @@
 #include <processManagement.h>
 
 #define SEM_OFFSET 10000
+#define SEM_READ 2
+
 static uint8_t rawMode = 0;
 
 extern uint64_t info[17];
@@ -36,26 +38,117 @@ void sys_write_handler(uint64_t fd, uint64_t buffer, uint64_t bytes)
     }
 }
 
+// int64_t sys_read_handler(uint64_t fd, char *buffer, uint64_t bytes)
+// {
+//     fd = fdLocalToGlobal(fd);
+//     PID pid = getPID();
+//     if (fd == STDIN)
+//     {
+//         if (getBackground() && pid != 1){
+//             blockProcess(pid);
+//             return 0;
+//         }
+
+//         semOpen(SEM_READ, 1);
+//         semWait(SEM_READ);
+
+//         if (rawMode)
+//         {
+//             if(getBackground() && pid == 1){
+//                 semPost(SEM_READ);
+//                 return 0;
+//             }
+//             int i;
+//             for (i = 0; i < bytes; i++)
+//             {
+//                 buffer[i] = readAscii();
+//             }
+//             semPost(SEM_READ);
+//             return i;
+//         }
+
+//         int i;
+//         for (i = 0; i < bytes; i++)
+//         {
+//             char c = readAscii();
+//             if (c == 3)
+//             { // CTRL + C
+//                 semPost(SEM_READ);
+//                 terminateProcess(pid);
+//                 return 3;
+//             }
+//             if (c == 4)
+//             { // CTRL + D
+//                 semPost(SEM_READ);
+//                 return 4;
+//             }
+
+//             if(getBackground()){
+//                 break;
+//             }
+
+//             if (c == '\t')
+//             {
+//                 i--;
+//                 continue;
+//             }
+
+//             if (c == -1){
+//                 semPost(SEM_READ);
+//                 return -1;
+//             }
+
+//             // Backspace
+//             if (c == 8)
+//             {
+//                 if (i <= 0)
+//                 {
+//                     i--;
+//                     continue;
+//                 }
+//                 i -= 2;
+//             }
+//             else
+//                 buffer[i] = c;
+
+//             ngc_printChar(c);
+//             if (c == '\n')
+//             {
+//                 i++;
+//                 break;
+//             }
+//         }
+//         semPost(SEM_READ);
+//         return i;
+//     }
+//     return readFd(fd, buffer, bytes);
+// }
+
 // Función para manejar la lectura desde el sistema
 int64_t sys_read_handler(uint64_t fd, char *buffer, uint64_t bytes)
 {
     fd = fdLocalToGlobal(fd);
     PID pid = getPID();
+    
     if (fd == STDIN)
-    {
-        if (getBackground())
-        {
+    { 
+        // Verificamos si el proceso es de background
+        if (getBackground() && pid != 1) {
             blockProcess(pid);
-            return 0;
+            return 0;   
         }
 
+        // Abre el semáforo para lectura
+        semOpen(SEM_READ, 1);
+        semWait(SEM_READ);
+
         if (rawMode)
-        {
+        {            
             int i;
-            for (i = 0; i < bytes; i++)
-            {
+            for (i = 0; i < bytes; i++) {
                 buffer[i] = readAscii();
             }
+            semPost(SEM_READ);
             return i;
         }
 
@@ -63,47 +156,62 @@ int64_t sys_read_handler(uint64_t fd, char *buffer, uint64_t bytes)
         for (i = 0; i < bytes; i++)
         {
             char c = readAscii();
-            if (c == 3)
-            { // CTRL + C
-                terminateProcess(pid);
-                return 1;
+
+            // Si se presiona CTRL+C
+            if (c == 3) {
+                semPost(SEM_READ);
+                if(pid != 1){
+                    return 0;
+                    semPost(SEM_READ);
+                }
+                return 3;
+            }  
+            
+            // Si se presiona CTRL+D
+            if (c == 4) {
+                semPost(SEM_READ);
+                return 0;
             }
-            if (c == 4)
-            { // CTRL + D
-                return i;
+            
+            if(getBackground()){
+                break;
             }
-            if (c == '\t')
-            {
+
+            if (c == '\t') {
                 i--;
                 continue;
             }
-            if (c == -1)
+            
+            if (c == -1) {
+                semPost(SEM_READ);
                 return -1;
-
-            // Backspace
-            if (c == 8)
-            {
-                if (i <= 0)
-                {
+            }
+                
+            // Manejo de Backspace
+            if (c == 8) {
+                if (i <= 0) {
                     i--;
                     continue;
                 }
                 i -= 2;
-            }
-            else
+            } else {
                 buffer[i] = c;
+            }
 
             ngc_printChar(c);
-            if (c == '\n')
-            {
+
+            // Si se presiona Enter
+            if (c == '\n') {
                 i++;
                 break;
             }
         }
+        semPost(SEM_READ);
         return i;
     }
     return readFd(fd, buffer, bytes);
 }
+
 
 // Función para obtener la hora actual del sistema
 static uint64_t sys_time_handler()

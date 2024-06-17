@@ -238,7 +238,8 @@ int wc()
 	int bytesRead = 0;
 	int lines = 1;
 	int wasLastCharNewLine = 0;
-
+	sys_semopen(SEM_READ,1);
+	sys_semwait(SEM_READ);
 	while ((bytesRead = sys_read(STDIN, buffer, 1024)) > 0)
 	{
 		for (int i = 0; i < bytesRead; i++)
@@ -251,7 +252,7 @@ int wc()
 			}
 		}
 	}
-
+	sys_sempost(SEM_READ);
 	if (wasLastCharNewLine)
 		lines--;
 
@@ -284,6 +285,8 @@ int printMem(int argc, const char *argv[])
 int filter() {
     char buffer[1024] = {0}; // Inicializamos el buffer con ceros
     int bytesRead = 0;
+	sys_semopen(SEM_READ,1);
+	sys_semwait(SEM_READ);
     while ((bytesRead = sys_read(STDIN, buffer, 1024)) > 0) {
         for (int i = 0; i < bytesRead; i++) {
             if (buffer[i] == 'a' ||
@@ -296,6 +299,7 @@ int filter() {
             sys_write(1, &buffer[i], 1);
         }
     }
+	sys_sempost(SEM_READ);
     return 0;
 }
 
@@ -303,9 +307,12 @@ int filter() {
 int cat() {
     char buffer[1024] = {0}; // Inicializamos el buffer con ceros
     int bytesRead = 0;
+	sys_semopen(SEM_READ,1);
+	sys_semwait(SEM_READ);
     while ((bytesRead = sys_read(STDIN, buffer, 1024)) > 0) {
         sys_write(1, buffer, bytesRead);
     }
+	sys_sempost(SEM_READ);
     return 0;
 }
 

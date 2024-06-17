@@ -1,30 +1,3 @@
-cd ..
-make all
-clear
-ls
-make clean
-cd Toolchain/
-make clean
-make all
-cd ..
-make all
-clear
-make clean
-cd Toolchain/
-make clean
-make all
-cd ..
-make all
-clear
-make clean
-cd Toolchain/
-make clean
-make all
-cd ..
-make all
-clear
-make clean
-cd Toolchain/
 make clean
 make all
 cd ..
@@ -494,6 +467,33 @@ pvs-studio-analyzer trace -- make
 pvs-studio-analyzer analyze
 plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
 pvs-studio-analyzer trace -- make
+clear
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+LS
+ls
+cd rot
+cd root
+ls
+clear
+la
+ls
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+clear
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+make clean
+make all
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+pvs-studio-analyzer trace -- make
+pvs-studio-analyzer analyze
+plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
 clear
 pvs-studio-analyzer trace -- make
 pvs-studio-analyzer analyze

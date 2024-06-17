@@ -14,6 +14,7 @@
 #define MAX_PHILO_COUNT 32
 #define MUTEX_ID 128
 #define SEMAPHORE_MIN_ID 129
+#define SEM_READ 3
 
 #define LEFT(x) (((x) + philoCount - 1) % philoCount)
 #define RIGHT(x) (((x) + 1) % philoCount)
@@ -56,8 +57,6 @@ void philosophers(unsigned int argc, const char **argv)
     if (argc > 1)
         strToIntBase(argv[1], _strlen(argv[1]), 10, &idx, 1);
 
-    // MEJOR CORTARLO CON CNTRL C
-    //int times = 10;
     while (1)
     {
         // Thinking
@@ -101,7 +100,8 @@ void philosopherManager()
     sys_setTerminalRawMode(1);
 
     philoCount = DEAULT_PHILO_COUNT;
-
+    sys_semopen(SEM_READ,1);
+    sys_semwait(SEM_READ);
     while (1)
     {
         int printerpid;
@@ -162,6 +162,6 @@ void philosopherManager()
 
         philoCount += modified;
     }
-
     sys_setTerminalRawMode(0);
+    sys_sempost(SEM_READ);
 }

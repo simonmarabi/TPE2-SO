@@ -52,11 +52,27 @@ static uint8_t split(char * input, char * buf[], uint8_t maxCount){
 
 int readInput(char *outputBuffer)
 {
+    sys_semopen(SEM_READ,1);
+	sys_semwait(SEM_READ);
     int len = 0;
-    printf(">$ ");
-    while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
-    outputBuffer[len-1] = 0;
-    return 0;    
+    if(sys_getbackground() != BACKGROUND){
+        printf(">$ ");
+        while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
+        outputBuffer[len-1] = 0;
+        sys_sempost(SEM_READ);
+        return 0;  
+    }
+    else{
+        while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
+        if (len == 3)
+            if(sys_kill(forePid) != -1)
+                printf("Process %d terminated correctly\n", forePid);
+        _strcpy(outputBuffer,"",1);
+        sys_sempost(SEM_READ);
+        return 0;
+    }
+
+    return -1;  
 }
 
 int shellProcessWrapper(int argc, char **argv)
@@ -136,56 +152,6 @@ void runCommand(Command cmd, int argc, char** argv)
     }
 }
 
-// void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** argv0, char** argv1 ){
-//     uint64_t pipe[2];
-//     if(sys_pipe(pipe) < 0){
-//         printf("[SHELL] ERROR: PIPE FAILED\n");
-//         return;
-//     }
-//     char handler0Str[24]; char handler1Str[24];
-//     uintToBase((uint64_t)cmd0.handler, handler0Str, 10);
-//     uintToBase((uint64_t)cmd1.handler, handler1Str, 10);
-
-//     char pipeOutStr[24]; char pipeInStr[24];
-//     uintToBase(pipe[1], pipeOutStr, 10);
-//     uintToBase(pipe[0], pipeInStr, 10);
-
-//     argv0[argc0] = handler0Str;
-//     argv1[argc1] = handler1Str;
-
-//     argv0[argc0+2] = pipeInStr;
-//     argv1[argc1+2] = pipeOutStr;
-
-//     if(cmd1.isBackground){
-//         argv0[argc0+1] = "1";
-//         argv1[argc1+1] = "1";
-//     }
-//     else{
-//         argv0[argc0+1] = "0";
-//         argv1[argc1+1] = "0";
-//     }
-
-//     PID pid0 = sys_createprocess(&shellProcessWrapper, argc0+WRAPPER_ARGS, argv0);
-//     PID pid1 = sys_createprocess(&shellProcessWrapper, argc1+WRAPPER_ARGS, argv1);
-//     sys_mapstdfds(pid0, STDIN, pipe[1]);
-//     sys_mapstdfds(pid1, pipe[0],STDOUT);
-//     sys_close(pipe[0]);
-//     sys_close(pipe[1]);
-
-//     if(cmd1.isBackground){
-//         sys_chgpriority(pid0, 1);
-//         sys_chgpriority(pid1, 1);
-//         sys_sempost(START_PROC_SEM);
-//         sys_sempost(START_PROC_SEM);
-//     }
-//     else{
-//         setShellBackground();
-//         sys_setbackground(pid0, FOREGROUND);
-//         forePid = pid0;
-//         sys_sempost(START_PROC_SEM);
-//         sys_sempost(START_PROC_SEM);
-//     }
-// }
 
 void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** argv0, char** argv1) {
     uint64_t pipe[2];

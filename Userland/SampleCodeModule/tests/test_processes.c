@@ -36,9 +36,6 @@ int64_t test_processes(uint64_t argc, char *argv[])
 
   p_rq p_rqs[max_processes];
 
-  while (1)
-  {
-
     // Create max_processes processes
     for (rq = 0; rq < max_processes; rq++)
     {
@@ -105,5 +102,6 @@ int64_t test_processes(uint64_t argc, char *argv[])
           p_rqs[rq].state = RUNNING;
         }
     }
-  }
+    printf("Ok\n");
+    return 0;
 }

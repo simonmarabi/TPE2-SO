@@ -13,7 +13,7 @@
 #include <syscall.h>
 
 #define CMD_COUNT 21
-
+#define SEM_READ 3
 
 typedef int (*CmdHandler)(int argc, const char* argv[]);
 

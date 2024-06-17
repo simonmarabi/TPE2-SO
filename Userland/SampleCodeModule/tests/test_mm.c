@@ -7,7 +7,6 @@
 #include <string.h>
 
 #define MAX_BLOCKS 128
-#define MAX_ITERATIONS 1000 // Define a maximum number of iterations for the test
 
 typedef struct MM_rq
 {
@@ -21,9 +20,8 @@ uint64_t test_mm(uint64_t argc, char *argv[])
     uint8_t rq;
     uint32_t total;
     uint64_t max_memory;
-    uint64_t iterations = 0; // Initialize iteration counter
 
-    if (argc < 2)
+    if (argc != 2)
     {
         printf("This test requires 1 parameter (MB to be used)\n");
         return -1;
@@ -33,7 +31,7 @@ uint64_t test_mm(uint64_t argc, char *argv[])
         return -1;
     }
 
-    while (iterations < MAX_ITERATIONS)
+    while (1)
     {
         rq = 0;
         total = 0;
@@ -82,10 +80,5 @@ uint64_t test_mm(uint64_t argc, char *argv[])
                 sys_free(mm_rqs[i].address);
             }
         }
-
-        iterations++; // Increment iteration counter
     }
-    
-    printf("ok\n");
-    return 0; // Return success
 }

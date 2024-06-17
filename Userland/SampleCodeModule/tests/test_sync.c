@@ -88,6 +88,6 @@ uint64_t test_sync(uint64_t argc, char *argv[])
     sys_semwait(pids[i]);
     sys_semwait(pids[i + TOTAL_PAIR_PROCESSES]);
   }
-  printf("Final value: %ld\n", global);
+  printf("Final value: %d\n", (int)global);
   return 0;
 }
