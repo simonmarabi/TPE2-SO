@@ -27,22 +27,22 @@ typedef struct {
 #pragma pack(pop)
 
 void inforeg_print(const Registers* regs) {
-    printf("rip: %lx\n", (uint64_t)regs->rip);
-    printf("rflags: %lx\n", (uint64_t)regs->rflags);
-    printf("rbp: %lx\n", (uint64_t)regs->rbp);
-    printf("rsp: %lx\n", (uint64_t)regs->rsp);
-    printf("rax: %lx\n", (uint64_t)regs->rax);
-    printf("rbx: %lx\n", (uint64_t)regs->rbx);
-    printf("rcx: %lx\n", (uint64_t)regs->rcx);
-    printf("rdx: %lx\n", (uint64_t)regs->rdx);
-    printf("rdi: %lx\n", (uint64_t)regs->rdi);
-    printf("rsi: %lx\n", (uint64_t)regs->rsi);
-    printf("r8: %lx\n", (uint64_t)regs->r8);
-    printf("r9: %lx\n", (uint64_t)regs->r9);
-    printf("r10: %lx\n", (uint64_t)regs->r10);
-    printf("r11: %lx\n", (uint64_t)regs->r11);
-    printf("r12: %lx\n", (uint64_t)regs->r12);
-    printf("r13: %lx\n", (uint64_t)regs->r13);
-    printf("r14: %lx\n", (uint64_t)regs->r14);
-    printf("r15: %lx\n", (uint64_t)regs->r15);
+    printf("rip: %lu\n", regs->rip);
+    printf("rflags: %lu\n", regs->rflags);
+    printf("rbp: %lu\n", regs->rbp);
+    printf("rsp: %lu\n", regs->rsp);
+    printf("rax: %lu\n", regs->rax);
+    printf("rbx: %lu\n", regs->rbx);
+    printf("rcx: %lu\n", regs->rcx);
+    printf("rdx: %lu\n", regs->rdx);
+    printf("rdi: %lu\n", regs->rdi);
+    printf("rsi: %lu\n", regs->rsi);
+    printf("r8: %lu\n",  regs->r8);
+    printf("r9: %lu\n",  regs->r9);
+    printf("r10: %lu\n", regs->r10);
+    printf("r11: %lu\n", regs->r11);
+    printf("r12: %lu\n", regs->r12);
+    printf("r13: %lu\n", regs->r13);
+    printf("r14: %lu\n", regs->r14);
+    printf("r15: %lu\n", regs->r15);
 }

@@ -1,4 +1,5 @@
 pvs-studio.com/en/docs/warnings/	1	err	Help: The documentation for all analyzer warnings is available here: https://pvs-studio.com/en/docs/warnings/.
+/root/Userland/SampleCodeModule/philosophers.c	61	note	V776 Potentially infinite loop.
 /root/Userland/SampleCodeModule/philosophers.c	130	warn	V785 Constant expression in switch statement.
-/root/Userland/SampleCodeModule/shell.c	130	warn	V507 Pointer to local array 'handlerStr' is stored outside the scope of this array. Such a pointer will become invalid.
-/root/Userland/SampleCodeModule/shell.c	232	note	V691 Empirical analysis. It is possible that a typo is present inside the string literal: "0". The '0' word is suspicious.
+/root/Userland/SampleCodeModule/shell.c	119	warn	V507 Pointer to local array 'handlerStr' is stored outside the scope of this array. Such a pointer will become invalid.
+/root/Userland/SampleCodeModule/shell.c	221	note	V691 Empirical analysis. It is possible that a typo is present inside the string literal: "0". The '0' word is suspicious.

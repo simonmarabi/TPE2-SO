@@ -233,6 +233,13 @@ void printf (const char *format, ...) {
 			case 'x':
             case 'X':
                 putBase(va_arg(p_arg, int), 16);
+				break;
+			case 'l':
+			case 'L':
+				format++;
+				if(*format == 'u' || *format == 'U')
+					putBase(va_arg(p_arg, int), 16);
+				break;
         }
         format++;
 		}

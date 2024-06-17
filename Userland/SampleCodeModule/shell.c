@@ -53,21 +53,10 @@ static uint8_t split(char * input, char * buf[], uint8_t maxCount){
 int readInput(char *outputBuffer)
 {
     int len = 0;
-    if(sys_getbackground() != BACKGROUND){
-        printf(">$ ");
-        while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
-        outputBuffer[len-1] = 0;
-        return 0;  
-    }
-    else{
-        while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
-        if (_strcmp(outputBuffer, "kill") == 0)
-            if(sys_kill(forePid) != -1)
-                printf("Process %d terminated correctly\n", forePid);
-        _strcpy(outputBuffer,"",1);
-        return 0;
-    }
-    return -1;   
+    printf(">$ ");
+    while((len = sys_read(0,outputBuffer,MAX_CMD_LEN)) <= 0);
+    outputBuffer[len-1] = 0;
+    return 0;    
 }
 
 int shellProcessWrapper(int argc, char **argv)

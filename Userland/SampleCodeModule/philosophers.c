@@ -57,8 +57,8 @@ void philosophers(unsigned int argc, const char **argv)
         strToIntBase(argv[1], _strlen(argv[1]), 10, &idx, 1);
 
     // MEJOR CORTARLO CON CNTRL C
-    int times = 10;
-    while (times--)
+    //int times = 10;
+    while (1)
     {
         // Thinking
         tryToEat(idx);
@@ -140,6 +140,7 @@ void philosopherManager()
                 modified = -1;
                 break;
             case 't':
+            case 3: // Ctrl + C
                 end = 1;
                 break;
             default:
