@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <inout.h>
 
@@ -25,22 +27,22 @@ typedef struct {
 #pragma pack(pop)
 
 void inforeg_print(const Registers* regs) {
-    printf("rip: %x\n", regs->rip);
-    printf("rflags: %x\n", regs->rflags);
-    printf("rbp: %x\n", regs->rbp);
-    printf("rsp: %x\n", regs->rsp);
-    printf("rax: %x\n", regs->rax);
-    printf("rbx: %x\n", regs->rbx);
-    printf("rcx: %x\n", regs->rcx);
-    printf("rdx: %x\n", regs->rdx);
-    printf("rdi: %x\n", regs->rdi);
-    printf("rsi: %x\n", regs->rsi);
-    printf("r8: %x\n", regs->r8);
-    printf("r9: %x\n", regs->r9);
-    printf("r10: %x\n", regs->r10);
-    printf("r11: %x\n", regs->r11);
-    printf("r12: %x\n", regs->r12);
-    printf("r13: %x\n", regs->r13);
-    printf("r14: %x\n", regs->r14);
-    printf("r15: %x\n", regs->r15);
+    printf("rip: %lx\n", (uint64_t)regs->rip);
+    printf("rflags: %lx\n", (uint64_t)regs->rflags);
+    printf("rbp: %lx\n", (uint64_t)regs->rbp);
+    printf("rsp: %lx\n", (uint64_t)regs->rsp);
+    printf("rax: %lx\n", (uint64_t)regs->rax);
+    printf("rbx: %lx\n", (uint64_t)regs->rbx);
+    printf("rcx: %lx\n", (uint64_t)regs->rcx);
+    printf("rdx: %lx\n", (uint64_t)regs->rdx);
+    printf("rdi: %lx\n", (uint64_t)regs->rdi);
+    printf("rsi: %lx\n", (uint64_t)regs->rsi);
+    printf("r8: %lx\n", (uint64_t)regs->r8);
+    printf("r9: %lx\n", (uint64_t)regs->r9);
+    printf("r10: %lx\n", (uint64_t)regs->r10);
+    printf("r11: %lx\n", (uint64_t)regs->r11);
+    printf("r12: %lx\n", (uint64_t)regs->r12);
+    printf("r13: %lx\n", (uint64_t)regs->r13);
+    printf("r14: %lx\n", (uint64_t)regs->r14);
+    printf("r15: %lx\n", (uint64_t)regs->r15);
 }

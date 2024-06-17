@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscalls.h>
 #include <stdint.h>
 #include <inout.h>
@@ -10,7 +12,7 @@
 
 // Función que pinta un rectángulo de un color específico en la pantalla.
 void do_paintRect(uint64_t fromX, uint64_t fromY, uint16_t width, uint16_t height, uint64_t color){
-    return sys_paint_rect(fromX, fromY, height, width, color);
+    return sys_paint_rect(fromX, fromY, width, height, color);
 }
 
 // Función que produce un sonido (beep) en el sistema con una frecuencia y duración
@@ -101,57 +103,58 @@ void do_invalidOpCode(){
 }
 
 // Función para obtener un carácter del teclado
-char do_getChar(){
-	char out;
-    while(sys_read(STDIN, &out, 1) == 0);
+char do_getChar() {
+    char out = '\0'; // Inicializamos out con un valor por defecto
+    while (sys_read(STDIN, &out, 1) == 0);
     return out;
 }
 
+
 // Función scanf para leer entrada con formato variable
-void scanf(char * format,...){
-	//lectura del buffer
-	char buffer[MAX_BUFFER] = {0};
-	if(sys_read(KBDIN, buffer, MAX_BUFFER) == -1) {
-		return;
-	}
-	// el primer caracter debe ser %
-	if(*format != '%'){
-		printf("uso incorrecto de scanf\n");
-		return;
-	}
-	va_list vl;
-	va_start(vl, format);
-	int buffIdx = 0;
-	while (*format != '\0'){
-		if(*format != '%'){ // es letra o espacio
-			if ( *format != ' '){
-				printf("uso incorrecto de scanf\n");
-				return;
-			}
-			else{
-				(*format)++; 
-			}
-		}
-		else{
-			(*format)++;
-			switch (*format) { // caso en el que estoy en una letra 
-            	case 'd':
-				case 'D':
-					*(int *)va_arg( vl, int* ) = strtoi(buffer, &buffIdx);	
-                	break;
-            	case 'c':
-				case 'C':
-					*(char *)va_arg( vl, char* ) = buffer[buffIdx++];
-                	break;
-				case ' ':
-					printf("uso incorrecto de scanf (Fijese de no dejar espacios luego del porcentaje)\n");
-					return;
-			}
-			(*format)++;	
-		}
-	}
-	va_end(vl);
+void scanf(char *format, ...) {
+    // Lectura del buffer
+    char buffer[MAX_BUFFER] = {0};
+    if (sys_read(KBDIN, buffer, MAX_BUFFER) == -1) {
+        return;
+    }
+    // El primer caracter debe ser %
+    if (*format != '%') {
+        printf("Uso incorrecto de scanf\n");
+        return;
+    }
+    va_list vl;
+    va_start(vl, format);
+    int buffIdx = 0;
+    format++; // Avanzamos al siguiente caracter después de %
+    while (*format != '\0') {
+        if (*format != '%') { // Es letra o espacio
+            if (*format != ' ') {
+                printf("Uso incorrecto de scanf\n");
+                return;
+            } else {
+                format++; // Avanzamos al siguiente caracter
+            }
+        } else {
+            format++; // Avanzamos al siguiente caracter después de %
+            switch (*format) { // Caso en el que estoy en una letra 
+                case 'd':
+                case 'D':
+                    *(int *)va_arg(vl, int *) = strtoi(buffer, &buffIdx);   
+                    break;
+                case 'c':
+                case 'C':
+                    *(char *)va_arg(vl, char *) = buffer[buffIdx++];
+                    break;
+                case ' ':
+                    printf("Uso incorrecto de scanf (Fíjese de no dejar espacios luego del porcentaje)\n");
+                    return;
+            }
+            format++; // Avanzamos al siguiente caracter después de %
+        }
+    }
+    va_end(vl);
 }
+
 
 // Función para imprimir información de los registros
 void do_printInfoReg(){

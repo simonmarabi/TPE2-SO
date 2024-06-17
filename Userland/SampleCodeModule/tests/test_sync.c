@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <stdio.h>
 #include "syscalls.h"
@@ -86,6 +88,6 @@ uint64_t test_sync(uint64_t argc, char *argv[])
     sys_semwait(pids[i]);
     sys_semwait(pids[i + TOTAL_PAIR_PROCESSES]);
   }
-  printf("Final value: %d\n", global);
+  printf("Final value: %ld\n", global);
   return 0;
 }

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <inout.h>
 #include <syscalls.h>
 #include <snakes.h>
@@ -70,12 +72,12 @@ void updatePoints(char playersChoice)
     do_changeFontSize(2);
     printf("\n\t\t\t\t\t\t\t\t\t\t\t\t");
     do_printColor("Player 1: ", player1.color);
-    printf("%d", player1.points);
+    printf("%d", (int)player1.points);
     if (playersChoice == '2')
     {
         printf("\t\t\t\t\t");
         do_printColor("Player 2: ", player2.color);
-        printf("%d", player2.points);
+        printf("%d", (int)player2.points);
     }
 
     // Restablece el tamaño de fuente a su valor original
@@ -435,7 +437,7 @@ static void winner(char playersChoice)
 
         printf("\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t");
         do_printColor("Points: ", player1.color);
-        printf("%d", player1.points);
+        printf("%d", (int)player1.points);
     }
 }
 

@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <shell.h>
 #include <inout.h>
 #include <stringUtil.h>
@@ -145,49 +147,106 @@ void runCommand(Command cmd, int argc, char** argv)
     }
 }
 
-void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** argv0, char** argv1 ){
+// void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** argv0, char** argv1 ){
+//     uint64_t pipe[2];
+//     if(sys_pipe(pipe) < 0){
+//         printf("[SHELL] ERROR: PIPE FAILED\n");
+//         return;
+//     }
+//     char handler0Str[24]; char handler1Str[24];
+//     uintToBase((uint64_t)cmd0.handler, handler0Str, 10);
+//     uintToBase((uint64_t)cmd1.handler, handler1Str, 10);
+
+//     char pipeOutStr[24]; char pipeInStr[24];
+//     uintToBase(pipe[1], pipeOutStr, 10);
+//     uintToBase(pipe[0], pipeInStr, 10);
+
+//     argv0[argc0] = handler0Str;
+//     argv1[argc1] = handler1Str;
+
+//     argv0[argc0+2] = pipeInStr;
+//     argv1[argc1+2] = pipeOutStr;
+
+//     if(cmd1.isBackground){
+//         argv0[argc0+1] = "1";
+//         argv1[argc1+1] = "1";
+//     }
+//     else{
+//         argv0[argc0+1] = "0";
+//         argv1[argc1+1] = "0";
+//     }
+
+//     PID pid0 = sys_createprocess(&shellProcessWrapper, argc0+WRAPPER_ARGS, argv0);
+//     PID pid1 = sys_createprocess(&shellProcessWrapper, argc1+WRAPPER_ARGS, argv1);
+//     sys_mapstdfds(pid0, STDIN, pipe[1]);
+//     sys_mapstdfds(pid1, pipe[0],STDOUT);
+//     sys_close(pipe[0]);
+//     sys_close(pipe[1]);
+
+//     if(cmd1.isBackground){
+//         sys_chgpriority(pid0, 1);
+//         sys_chgpriority(pid1, 1);
+//         sys_sempost(START_PROC_SEM);
+//         sys_sempost(START_PROC_SEM);
+//     }
+//     else{
+//         setShellBackground();
+//         sys_setbackground(pid0, FOREGROUND);
+//         forePid = pid0;
+//         sys_sempost(START_PROC_SEM);
+//         sys_sempost(START_PROC_SEM);
+//     }
+// }
+
+void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** argv0, char** argv1) {
     uint64_t pipe[2];
-    if(sys_pipe(pipe) < 0){
+    if (sys_pipe(pipe) < 0) {
         printf("[SHELL] ERROR: PIPE FAILED\n");
         return;
     }
-    char handler0Str[24]; char handler1Str[24];
-    uintToBase((uint64_t)cmd0.handler, handler0Str, 10);
-    uintToBase((uint64_t)cmd1.handler, handler1Str, 10);
 
-    char pipeOutStr[24]; char pipeInStr[24];
+    // Variables estáticas para almacenar las cadenas convertidas
+    static char handler0Str[24];
+    static char handler1Str[24];
+    static char pipeOutStr[24];
+    static char pipeInStr[24];
+
+    // Convertir valores a cadenas estáticas
+    uintToBase((uint64_t) cmd0.handler, handler0Str, 10);
+    uintToBase((uint64_t) cmd1.handler, handler1Str, 10);
     uintToBase(pipe[1], pipeOutStr, 10);
     uintToBase(pipe[0], pipeInStr, 10);
 
+    // Asignar punteros a argv0 y argv1
     argv0[argc0] = handler0Str;
     argv1[argc1] = handler1Str;
+    argv0[argc0 + 2] = pipeInStr;
+    argv1[argc1 + 2] = pipeOutStr;
 
-    argv0[argc0+2] = pipeInStr;
-    argv1[argc1+2] = pipeOutStr;
-
-    if(cmd1.isBackground){
-        argv0[argc0+1] = "1";
-        argv1[argc1+1] = "1";
+    // Configurar otros argumentos según sea necesario
+    if (cmd1.isBackground) {
+        argv0[argc0 + 1] = "1";
+        argv1[argc1 + 1] = "1";
+    } else {
+        argv0[argc0 + 1] = "0";
+        argv1[argc1 + 1] = "0";
     }
-    else{
-        argv0[argc0+1] = "0";
-        argv1[argc1+1] = "0";
-    }
 
-    PID pid0 = sys_createprocess(&shellProcessWrapper, argc0+WRAPPER_ARGS, argv0);
-    PID pid1 = sys_createprocess(&shellProcessWrapper, argc1+WRAPPER_ARGS, argv1);
+    // Crear procesos y manejar descriptores de archivos
+    PID pid0 = sys_createprocess(&shellProcessWrapper, argc0 + WRAPPER_ARGS, argv0);
+    PID pid1 = sys_createprocess(&shellProcessWrapper, argc1 + WRAPPER_ARGS, argv1);
     sys_mapstdfds(pid0, STDIN, pipe[1]);
-    sys_mapstdfds(pid1, pipe[0],STDOUT);
+    sys_mapstdfds(pid1, pipe[0], STDOUT);
     sys_close(pipe[0]);
     sys_close(pipe[1]);
 
-    if(cmd1.isBackground){
+    // Manejar prioridades y semáforos según sea necesario
+    if (cmd1.isBackground) {
         sys_chgpriority(pid0, 1);
         sys_chgpriority(pid1, 1);
         sys_sempost(START_PROC_SEM);
         sys_sempost(START_PROC_SEM);
-    }
-    else{
+    } else {
         setShellBackground();
         sys_setbackground(pid0, FOREGROUND);
         forePid = pid0;
@@ -195,6 +254,7 @@ void runPipedCommands(Command cmd0, Command cmd1, int argc0, int argc1, char** a
         sys_sempost(START_PROC_SEM);
     }
 }
+
 
 void runShell(){
     sys_semopen (START_PROC_SEM, 0);

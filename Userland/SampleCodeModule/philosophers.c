@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscalls.h>
 #include <stdint.h>
 #include <stringUtil.h>
@@ -13,18 +15,21 @@
 #define MUTEX_ID 128
 #define SEMAPHORE_MIN_ID 129
 
-#define LEFT(x) (((x)+philoCount-1)%philoCount)
-#define RIGHT(x) (((x)+1)%philoCount)
+#define LEFT(x) (((x) + philoCount - 1) % philoCount)
+#define RIGHT(x) (((x) + 1) % philoCount)
 
 static uint8_t philoVector[MAX_PHILO_COUNT];
 static int philoPID[MAX_PHILO_COUNT];
 static int philoCount;
 
-void tryToEat(int idx) {
+void tryToEat(int idx)
+{
     philoVector[idx] = HUNGRY;
-    while (philoVector[idx] == HUNGRY) {
+    while (philoVector[idx] == HUNGRY)
+    {
         sys_semwait(MUTEX_ID);
-        if (philoVector[idx] == HUNGRY && philoVector[LEFT(idx)] != EATING && philoVector[RIGHT(idx)] != EATING) {
+        if (philoVector[idx] == HUNGRY && philoVector[LEFT(idx)] != EATING && philoVector[RIGHT(idx)] != EATING)
+        {
             philoVector[idx] = EATING;
             sys_sempost(SEMAPHORE_MIN_ID + idx);
         }
@@ -33,7 +38,8 @@ void tryToEat(int idx) {
     }
 }
 
-void stopEating(int idx) {
+void stopEating(int idx)
+{
     sys_semwait(MUTEX_ID);
     philoVector[idx] = THINKING;
     if (philoVector[LEFT(idx)] == HUNGRY)
@@ -43,34 +49,44 @@ void stopEating(int idx) {
     sys_sempost(MUTEX_ID);
 }
 
-void philosophers(unsigned int argc, const char** argv) {
-    int idx;
+void philosophers(unsigned int argc, const char **argv)
+{
+    int idx = 0; // Valor por defecto para idx
+
     if (argc > 1)
         strToIntBase(argv[1], _strlen(argv[1]), 10, &idx, 1);
 
-    while (1) {
-        //Thinking
+    // MEJOR CORTARLO CON CNTRL C
+    int times = 10;
+    while (times--)
+    {
+        // Thinking
         tryToEat(idx);
-        //Eating
+        // Eating
         stopEating(idx);
     }
 }
 
-void philosopherPrinter() {
+void philosopherPrinter()
+{
     uint64_t t = sys_time();
-    while(1) {
+    while (1)
+    {
         uint64_t newT = sys_time();
-        if(t != newT) {
+        if (t != newT)
+        {
             t = newT;
-            for (int i = 0; i < philoCount; i++) {
-                char * printState;
-                switch (philoVector[i]) {
-                    case EATING:
-                        printState = "E";
-                        break;
-                    default:
-                        printState = ".";
-                        break;
+            for (int i = 0; i < philoCount; i++)
+            {
+                char *printState;
+                switch (philoVector[i])
+                {
+                case EATING:
+                    printState = "E";
+                    break;
+                default:
+                    printState = ".";
+                    break;
                 }
 
                 printf("%s ", printState);
@@ -80,13 +96,14 @@ void philosopherPrinter() {
     }
 }
 
-void philosopherManager() {
+void philosopherManager()
+{
     sys_setTerminalRawMode(1);
 
     philoCount = DEAULT_PHILO_COUNT;
-    
-    while (1) {
 
+    while (1)
+    {
         int printerpid;
         int modified = 0;
         int end = 0;
@@ -94,19 +111,24 @@ void philosopherManager() {
         sys_semopen(MUTEX_ID, 1);
 
         char idstr[10];
-        char * argv[] = {"philosopher", idstr, 0};
+        char *argv[] = {"philosopher", idstr, 0};
 
-        for (int i = 0; i < philoCount; i++) {
+        for (int i = 0; i < philoCount; i++)
+        {
             uintToBase(i, idstr, 10);
             sys_semopen(SEMAPHORE_MIN_ID + i, 0);
             philoPID[i] = sys_createprocess(&philosophers, 2, argv);
         }
-        char * printerArgs[] = {"phprinter",0};
+
+        char *printerArgs[] = {"phprinter", 0};
         printerpid = sys_createprocess(&philosopherPrinter, 1, printerArgs);
 
-        char buf[2];
-        while (sys_read(0,buf,1)) {
-            switch (buf[0]) {
+        char buf[2] = {0}; // Inicialización del arreglo buf
+
+        while (sys_read(0, buf, 1))
+        {
+            switch (buf[0])
+            {
             case 'a':
                 if (philoCount == MAX_PHILO_COUNT)
                     continue;
@@ -125,15 +147,17 @@ void philosopherManager() {
             }
             break;
         }
-        
+
         sys_kill(printerpid);
-        for (int i = 0; i < philoCount; i++) {
+        for (int i = 0; i < philoCount; i++)
+        {
             sys_kill(philoPID[i]);
             sys_semclose(SEMAPHORE_MIN_ID + i);
         }
         sys_semclose(MUTEX_ID);
 
-        if (end) break;
+        if (end)
+            break;
 
         philoCount += modified;
     }
